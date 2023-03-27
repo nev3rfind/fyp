@@ -1,4 +1,5 @@
 ﻿import { createApp } from 'vue';
+import 'bootstrap';
 
 // load all solid icons
 // modify here to load individual icons as needed to reduce bundle size
@@ -23,3 +24,7 @@ const app = createApp({
 app.component('font-awesome-icon', FontAwesomeIcon);
 
 app.mount('#app');
+
+if (module.hot) {
+    module.hot.accept();
+}

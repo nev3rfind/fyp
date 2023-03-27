@@ -12,9 +12,9 @@ module.exports = {
     ],
     output: {
         clean: true,
-        path: path.resolve(__dirname, 'dist'),
+        path: path.resolve(__dirname, 'public', 'dist'),
         publicPath: '/dist',
-        filename: '[name].bundle.[contenthash].js',
+        filename: 'main.bundle.[contenthash].js',
     },
     resolve: {
         // point bundler to the vue template compiler
@@ -24,6 +24,18 @@ module.exports = {
         // allow imports to omit file exensions, 
         // e.g. "import foo from 'foobar'" instead of "import foo from 'foobar.js'"
         extensions: ['.js', '.vue'],
+    },
+    devServer: {
+        historyApiFallback: {
+            index: '/dist/index.html',
+        },
+        proxy: [
+            {
+                context: '/api/**',
+                target: 'http://localhost:64373', // use port from IISExpress
+            },
+        ],
+        open: true
     },
     module: {
         rules: [
@@ -62,7 +74,8 @@ module.exports = {
         new VueLoaderPlugin(),
         new HtmlWebpackPlugin({
             template: 'src/index.html',
-            inject: true,
+            filename: 'index.html',
+            inject: 'body',
             // favicon: 'src/images/favicon.ico',
             publicPath: '/dist'
         }),

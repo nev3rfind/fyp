@@ -1,2 +1,77 @@
-﻿@charset "utf-8";
-@import "~bulma/bulma";
+﻿@import "../../node_modules/bootstrap/scss/functions";
+/* Colours */
+$main-background: #0b0a1a;
+$nav-background: #111021;
+$icon-colour: #656f7f;
+$nav-text: #0092CC;
+$primary: #FFFDFA;
+$secondary: #969696;
+$yellow: #dcd427;
+$red: #cc3333;
+$border: #b7b327;
+$accordion-icon-color: $primary;
+$accordion-icon-active-color: $yellow;
+$headings-color: $primary;
+$card-background: RGB(230 234 238 / 5%);
+
+/* Font */
+$font-title: 22px;
+
+/* Customising button */
+$btn-background: $card-background;
+$btn-border: #56a1c5;
+$btn-color: $primary;
+
+@mixin button-variant($background, $border, $color) {
+    background-color: $btn-background;
+    border: 1px solid #b7b327;
+    color: $secondary;
+
+    &:hover {
+        background-color: $icon-colour;
+        border: 1px solid $btn-background;
+        color: $primary;
+    }
+}
+/* With 'basic' class */
+.btn-primary {
+    &.basic {
+        @include button-variant($btn-background, $btn-border, $btn-color);
+    }
+}
+
+/* Comparision table */
+$table-border-color: $secondary;
+$table-bg: $card-background;
+$table-color: $primary;
+
+@import "../../node_modules/bootstrap/scss/variables";
+@import "../../node_modules/bootstrap/scss/maps";
+@import "../../node_modules/bootstrap/scss/mixins";
+@import "../../node_modules/bootstrap/scss/root";
+@import "../../node_modules/bootstrap/scss/reboot";
+@import "../../node_modules/bootstrap/scss/type";
+@import "../../node_modules/bootstrap/scss/images";
+@import "../../node_modules/bootstrap/scss/containers";
+@import "../../node_modules/bootstrap/scss/grid";
+@import "../../node_modules/bootstrap/scss/utilities";
+@import "../../node_modules/bootstrap/scss/utilities/api";
+@import "../../node_modules/bootstrap/scss/card";
+/* Badge variables */
+$badge-font-size: 1rem;
+@import "../../node_modules/bootstrap/scss/badge";
+@import "../../node_modules/bootstrap/scss/buttons";
+@import "../../node_modules/bootstrap/scss/tables";
+/* Loading animation */
+@import "../../node_modules/bootstrap/scss/spinners";
+/* Accordion properties */
+$accordion-bg: $card-background;
+$accordion-color: $primary;
+$accordion-button-color: $primary;
+$accordion-border-width: 0px;
+$accordion-button-active-bg: $icon-colour;
+$accordion-button-active-color: $yellow;
+@import "../../node_modules/bootstrap/scss/accordion";
+/* Accordion collapsing animation */
+@import "../../node_modules/bootstrap/scss/transitions";
+
