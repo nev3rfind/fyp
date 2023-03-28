@@ -128,7 +128,6 @@
   <ItemGroup>
     <Content Include="favicon.ico" />
     <Content Include="Global.asax" />
-    <Content Include="src\images\nhs_logo.svg" />
     <Content Include="src\index.html" />
     <Content Include="src\js\app.js" />
     <Content Include="Web.config" />
@@ -143,6 +142,7 @@
   <ItemGroup>
     <Folder Include="App_Data\" />
     <Folder Include="Models\" />
+    <Folder Include="src\assets\images\" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -150,6 +150,7 @@
     <Content Include="src\components\Layout.vue" />
     <Content Include="src\components\NavigationBar.vue" />
     <Content Include="src\sass\_navigation-bar.scss" />
+    <Content Include="src\components\HomePage.vue" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

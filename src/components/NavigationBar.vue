@@ -1,8 +1,15 @@
 ﻿<template>
+    <div class="top-bar">
+        <img :src="nhsLogo" class="top-logo" />
+        <div class="icons">
+            <i class='bx bxs-message-rounded-dots'></i>
+            <i class='bx bxs-user-account'></i>
+        </div>
+    </div>
     <div class="wrapper">
         <div class="main-nav-bar">
             <a href="#" class="logo-custom text-center">
-               
+                <img :src="nhsLogo" alt="NHS">
             </a>
             <div class="logo-title"></div>
             <ul class="main-nav" ref="responsiveNav" :class="navClasses">
@@ -37,10 +44,12 @@
 </template>
 
 <script>
+    import nhsLogo from '../assets/images/nhs_logo.svg';
     export default {
         data() {
             return {
                 navClasses: '',
+                nhsLogo: nhsLogo,
             };
         },
         mounted() {

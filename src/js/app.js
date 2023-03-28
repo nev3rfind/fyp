@@ -10,6 +10,7 @@ library.add(fas);
 
 import Layout from "../components/Layout";
 import NavigationBar from "../components/NavigationBar";
+import HomePage from "../components/HomePage";
 
 // pull in main stylesheet
 require('../sass/app.scss');
@@ -17,7 +18,8 @@ require('../sass/app.scss');
 const app = createApp({
     components: {
         Layout,
-        NavigationBar
+        NavigationBar,
+        HomePage
     }
 });
 
