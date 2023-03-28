@@ -1,9 +1,37 @@
 ﻿@import "../../node_modules/bootstrap/scss/functions";
+/* NHS colours pallete */
+/* Blues */
+$main-blue: #005EB8;
+$main-blue-dark: #003087;
+$main-blue-bright: #0072CE;
+$main-blue-light: #41B6E6;
+$main-blue-aqua: #00A9CE;
+/* NHS neutrals */
+$neutral-black: #231f20;
+$neutral-grey-dark: #425563;
+$neutral-grey-mid: #768692;
+$neutral-grey-pale: #E8EDEE;
+$neutral-white: #FFFFFF;
+/* NHS greens */
+$green: #009639;
+$green-dark: #006747;
+$green-light: #78BE20;
+$green-aqua: #00A499;
+/* NHS higlights */
+$purple: #330072;
+$pink: #AE2573;
+$pink-dark: #7C2855;
+$red: #DA291C;
+$red-dark: #8A1538;
+$orange: #ED8B00;
+$yellow: #FAE100;
+$yellow-warm: #FFB81C;
+
 /* Colours */
-$main-background: #0b0a1a;
-$nav-background: #111021;
-$icon-colour: #656f7f;
-$nav-text: #0092CC;
+$main-background: $neutral-white;
+$nav-background: $main-blue;
+$icon-colour: $neutral-white;
+$nav-text: $neutral-grey-pale;
 $primary: #FFFDFA;
 $secondary: #969696;
 $yellow: #dcd427;
@@ -21,6 +49,7 @@ $font-title: 22px;
 $btn-background: $card-background;
 $btn-border: #56a1c5;
 $btn-color: $primary;
+
 
 @mixin button-variant($background, $border, $color) {
     background-color: $btn-background;
@@ -74,4 +103,5 @@ $accordion-button-active-color: $yellow;
 @import "../../node_modules/bootstrap/scss/accordion";
 /* Accordion collapsing animation */
 @import "../../node_modules/bootstrap/scss/transitions";
+@import "_navigation-bar.scss";
 
