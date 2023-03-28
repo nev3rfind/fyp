@@ -12,9 +12,9 @@ module.exports = {
     ],
     output: {
         clean: true,
-        path: path.resolve(__dirname, 'public', 'dist'),
+        path: path.resolve(__dirname, 'dist'),
         publicPath: '/dist',
-        filename: 'main.bundle.[contenthash].js',
+        filename: '[name].bundle.[contenthash].js',
     },
     resolve: {
         // point bundler to the vue template compiler
@@ -74,8 +74,7 @@ module.exports = {
         new VueLoaderPlugin(),
         new HtmlWebpackPlugin({
             template: 'src/index.html',
-            filename: 'index.html',
-            inject: 'body',
+            inject: true,
             // favicon: 'src/images/favicon.ico',
             publicPath: '/dist'
         }),

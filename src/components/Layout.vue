@@ -1,15 +1,21 @@
 ﻿<template>
-    safdsaf
+    <div>
+        <NavigationBar />
+        <div>
+            <!-- Add a slot element here -->
+            <slot></slot>
+        </div>
+    </div>
 </template>
 
 <script>
-  export default {
-    data() {
-      return {
-        menuActive: false,
-      };
-    },
-  };
+    import NavigationBar from './NavigationBar.vue';
+
+    export default {
+        components: {
+            NavigationBar
+        }
+    };
 </script>
 
 <style lang="scss" scoped>
