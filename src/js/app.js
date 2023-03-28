@@ -8,16 +8,16 @@ import { library } from '@fortawesome/fontawesome-svg-core';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 library.add(fas);
 
-import HelloWorld from "../components/HelloWorld";
 import Layout from "../components/Layout";
+import NavigationBar from "../components/NavigationBar";
 
 // pull in main stylesheet
 require('../sass/app.scss');
 
 const app = createApp({
     components: {
-        HelloWorld,
-        Layout
+        Layout,
+        NavigationBar
     }
 });
 

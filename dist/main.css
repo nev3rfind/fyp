@@ -5045,3 +5045,111 @@ progress {
       .collapsing.collapse-horizontal {
         transition: none; } }
 
+.main-nav-bar {
+  width: 105px;
+  z-index: 10;
+  background: #111021;
+  bottom: 0;
+  position: fixed;
+  top: 0;
+  text-align: center;
+  padding-top: 80px;
+  box-shadow: 2px 0px 12px 0px RGB(33 33 33/5%); }
+
+.logo-custom {
+  display: block;
+  line-height: 100px;
+  width: 105px;
+  position: fixed;
+  top: 0; }
+
+.main-nav {
+  padding-left: 0;
+  list-style-type: none;
+  text-align: center;
+  margin: 0px 10px; }
+  .main-nav .main-nav-link {
+    padding: 10px 15px 3px 15px;
+    display: block;
+    position: relative;
+    transition: all .4s;
+    text-decoration: none; }
+    .main-nav .main-nav-link i {
+      line-height: 2rem;
+      font-size: 1.9rem;
+      display: block;
+      vertical-align: middle;
+      color: #656f7f; }
+    .main-nav .main-nav-link span {
+      vertical-align: middle;
+      font-size: 0.7rem;
+      font-weight: 500;
+      white-space: nowrap;
+      color: #0092CC;
+      padding-bottom: 10px; }
+
+.main-nav-item {
+  margin-bottom: 20px;
+  color: #20c997; }
+
+.main-nav-item:hover {
+  background: linear-gradient(150deg, rgba(255, 255, 255, 0.1), rgba(128, 128, 128, 0.1)); }
+
+.logo-title {
+  font-size: .8rem;
+  padding-bottom: 40px; }
+
+.content-page {
+  margin-left: 105px;
+  padding: 70px 30px 40px;
+  min-height: 89vh; }
+
+@media screen and (max-width: 1024px) {
+  .main-nav-bar {
+    position: absolute;
+    width: 94%;
+    left: 50%;
+    transform: translateX(-50%);
+    bottom: 20px;
+    height: 71px;
+    z-index: 1002;
+    top: inherit;
+    padding-top: 0;
+    box-shadow: 0px -2px 12px 0px #00000029;
+    background: linear-gradient(180deg, rgba(230, 234, 238, 0.05), rgba(115, 117, 119, 0.05));
+    border-radius: 30px; }
+  .logo-custom {
+    display: none;
+    line-height: 60px;
+    width: 0px; }
+  .main-nav {
+    margin: 0px 0px; }
+    .main-nav .main-nav-link i {
+      display: block; }
+    .main-nav .main-nav-link i::before {
+      display: inline-block; }
+  .main-nav-item {
+    width: 100px;
+    margin-bottom: 0px; }
+  .logo-title {
+    display: none; }
+  .content-page {
+    padding: 30px 12px 75px;
+    margin-left: 0px;
+    overflow-y: auto;
+    max-height: 500px; } }
+
+@media screen and (max-width: 500px) {
+  .main-nav-bar {
+    height: 62px; }
+  .main-nav .main-nav-link i {
+    line-height: 1.7rem;
+    font-size: 1.4rem; }
+  .content-page {
+    padding: 80px 30px 75px; } }
+
+.wrapper {
+  height: 100%;
+  width: 100%;
+  overflow: hidden; }
+
