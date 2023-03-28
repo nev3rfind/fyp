@@ -5053,7 +5053,7 @@ progress {
 .main-nav-bar {
   width: 130px;
   z-index: 10;
-  background: #005EB8;
+  background: #0072CE;
   bottom: 0;
   position: fixed;
   top: 0;
@@ -5061,11 +5061,10 @@ progress {
   padding-top: 80px;
   box-shadow: 2px 0px 12px 0px RGB(33 33 33/5%); }
 
-.logo-custom {
-  display: block;
+.logo-custom img {
   line-height: 100px;
-  width: 105px;
-  position: fixed;
+  width: 100px;
+  position: relative;
   top: 0; }
 
 .main-nav {
@@ -5157,4 +5156,27 @@ progress {
   height: 100%;
   width: 100%;
   overflow: hidden; }
+
+/* Top bar */
+.top-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #f0f0f0;
+  padding: 0px 30px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); }
+
+.top-logo {
+  width: 100%;
+  height: auto;
+  max-width: 80px; }
+
+.icons {
+  display: flex;
+  align-items: center; }
+
+.icons i {
+  font-size: 2.5rem;
+  margin-left: 20px;
+  color: #768692; }
 
