@@ -24,6 +24,7 @@
     "webpack-dev-server": "^4.13.1"
   },
   "scripts": {
-    "hot": "webpack-dev-server --config=webpack.config.js"
+    "hot": "webpack-dev-server --config=webpack.config.js",
+    "watch": "webpack --config=webpack.config.js --watch"
   }
 }

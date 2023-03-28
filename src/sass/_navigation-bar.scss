@@ -1,5 +1,5 @@
 ﻿.main-nav-bar {
-    width: 105px;
+    width: 130px;
     z-index: 10;
     background: $nav-background;
     bottom: 0;
@@ -73,7 +73,7 @@
 @media screen and (max-width: 1024px) {
     .main-nav-bar {
         position: absolute;
-        width: 94%;
+        width: 96%;
         left: 50%;
         transform: translateX(-50%);
         bottom: 20px;
@@ -82,7 +82,7 @@
         top: inherit;
         padding-top: 0;
         box-shadow: 0px -2px 12px 0px #00000029;
-        background: linear-gradient(180deg,rgba(230, 234, 238, 0.05), rgba(115, 117, 119, 0.05));
+        background: $main-blue;
         border-radius: 30px;
     }
 
