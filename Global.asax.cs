@@ -15,6 +15,10 @@ namespace NhsImsApp
             AreaRegistration.RegisterAllAreas();
             FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);
             RouteConfig.RegisterRoutes(RouteTable.Routes);
+
+            // The data directory
+            string dataDirectory = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "App_Data");
+            AppDomain.CurrentDomain.SetData("DataDirectory", dataDirectory);
         }
     }
 }
