@@ -105,3 +105,9 @@ $accordion-button-active-color: $yellow;
 @import "../../node_modules/bootstrap/scss/transitions";
 @import "_navigation-bar.scss";
 
+.login-form-logo {
+    width: 100%;
+    height: auto;
+    max-width: 80px;
+}
+

@@ -129,6 +129,7 @@
   <ItemGroup>
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
+    <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\SpaController.cs" />
     <Compile Include="Data\ApplicationDbContext.cs" />
     <Compile Include="Data\DbInitializer.cs" />
@@ -142,6 +143,7 @@
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\Appointment.cs" />
     <Compile Include="Models\Examination.cs" />
+    <Compile Include="Models\LoginViewModel.cs" />
     <Compile Include="Models\Medication.cs" />
     <Compile Include="Models\Patient.cs" />
     <Compile Include="Models\PatientExamination.cs" />
@@ -159,6 +161,7 @@
     <Content Include="Global.asax" />
     <Content Include="src\index.html" />
     <Content Include="src\js\app.js" />
+    <Content Include="src\js\router.js" />
     <Content Include="Web.config" />
     <Content Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
@@ -171,6 +174,7 @@
   <ItemGroup>
     <Folder Include="App_Data\" />
     <Folder Include="src\assets\images\" />
+    <Folder Include="Views\Account\" />
     <Folder Include="Views\Staff\" />
   </ItemGroup>
   <ItemGroup>
@@ -180,6 +184,8 @@
     <Content Include="src\components\NavigationBar.vue" />
     <Content Include="src\sass\_navigation-bar.scss" />
     <Content Include="src\components\HomePage.vue" />
+    <Content Include="src\components\LoginPage.vue" />
+    <Content Include="src\components\App.vue" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Migrations\202303291059045_InitialCreate.resx">
