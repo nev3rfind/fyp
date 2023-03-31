@@ -29,6 +29,7 @@
                     </div>
                 </form>
             </div>
+            <p>data:  {{ info }}</p>
         </div>
     </div>
 </template>
@@ -43,6 +44,7 @@
                 username: "",
                 password: "",
                 error: "",
+                info: null,
             };
         },
         methods: {
@@ -54,12 +56,15 @@
                     });
 
                     if (response.data.success) {
+                        this.info = response
+                        console.log(response);
                         this.$store.commit("setUser", response.data.user);
                         this.$router.push({ name: "Dashboard" });
                     } else {
                         this.error = response.data.error;
                     }
                 } catch (error) {
+                    console.log("Error trying to log in!")
                     this.error = "Error occurred while logging in.";
                 }
             },
