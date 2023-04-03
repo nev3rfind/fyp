@@ -12,14 +12,17 @@
                 <form @submit.prevent="onSubmit">
                     <div class="form-group">
                         <label class="form-label" for="username">Staff Username</label>
-                        <input type="text" class="form-control" id="username" v-model="username" />
+                        <input type="text" :class="usernameClass" id="username" v-model="username" />
                     </div>
                     <div class="form-group mt-2">
                         <label for="password" class="form-label d-flex justify-content-between">
                             <span>Password</span>
                             <a class="link-primary" href="/forgot-password">Forgot Password?</a>
                         </label>
-                        <input type="password" class="form-control" id="password" v-model="password" />
+                        <input type="password" :class="passwordClass" id="password" v-model="password" />
+                        <div id="validationServerUsernameFeedback" class="invalid-feedback" v-if="loginFailed">
+                            Invalid username or password
+                        </div>
                     </div>
                     <div class="form-group text-center mt-4">
                         <button type="submit" class="btn btn-primary basic w-100 w-md-auto">Login</button>
@@ -45,6 +48,7 @@
                 password: "",
                 error: "",
                 info: null,
+                loginFailed: false,
             };
         },
         methods: {
@@ -56,19 +60,31 @@
                     });
 
                     if (response.data.success) {
+                        this.loginFailed = false;
                         this.info = response.data.user
                         console.log(response);
                         this.$store.commit("setUser", response.data.user);
-                        this.$router.push({ name: "Dashboard" });
+                        this.$router.push({ name: "Home" }); // Redirect to Home Page
                     } else {
-                        this.error = response.data.error;
+                        this.loginFailed = true;
+                        console.error("Login failed: ", response.data.error);
                     }
                 } catch (error) {
-                    console.log("Error trying to log in!")
+                    this.info = error;
+                    this.loginFailed = true;
                     this.error = "Error occurred while logging in.";
                 }
             },
         },
+        computed: {
+            usernameClass() {
+                return this.loginFailed ? 'form-control is-invalid' : 'form-control';
+            },
+            passwordClass() {
+                return this.loginFailed ? 'form-control is-invalid' : 'form-control';
+            },
+        },
+
     };
 
 </script>

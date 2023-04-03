@@ -1,5 +1,6 @@
 ﻿import { createApp } from 'vue';
 import router from './router';
+import store from './store';
 import 'bootstrap';
 
 // load all solid icons
@@ -18,7 +19,8 @@ const app = createApp({
     components: {
         App,
     }
-}).use(router);
+}).use(store)
+    .use(router);
 
 app.component('font-awesome-icon', FontAwesomeIcon);
 

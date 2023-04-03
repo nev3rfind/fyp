@@ -3,8 +3,15 @@
         <img :src="nhsLogo" class="top-logo" />
         <div class="icons">
             <i class='bx bxs-message-rounded-dots'></i>
-            <i class='bx bxs-user-account'></i>
+            <button class='btn'>
+                <i class='bx bxs-user-account'></i>
+                <ul class="dropdown">
+                    <li><a href="#" @click.prevent="userSettings"><i class='bx bx-cog'></i> User settings</a></li>
+                    <li><a href="#" @click.prevent="logOut"><i class='bx bx-log-out-circle'></i> Log Out</a></li>
+                </ul>
+            </button>
         </div>
+
     </div>
     <div class="wrapper">
         <div class="main-nav-bar">
@@ -67,10 +74,25 @@
                     this.navClasses = '';
                 }
             },
+            toggleDropdown() {
+                const dropdownElement = document.getElementById("accountDropdown");
+                const dropdownInstance = new bootstrap.Dropdown(dropdownElement);
+                dropdownInstance.toggle();
+            },
+            userSettings() {
+                // Your logic for handling user settings
+            },
+            logout() {
+                this.$store.commit("setUser", null);
+                this.$router.push({ name: "LoginPage" });
+            },
+
         },
     };
 </script>
 
 <style lang="scss" scoped>
-  
+    @import '../sass/app.scss';
+   
+
 </style>
