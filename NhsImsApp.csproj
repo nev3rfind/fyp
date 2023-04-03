@@ -140,6 +140,10 @@
     <Compile Include="Migrations\202303291059045_InitialCreate.designer.cs">
       <DependentUpon>202303291059045_InitialCreate.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202304031557020_AddLastLoginAndLastAuthenticatedToStaffs.cs" />
+    <Compile Include="Migrations\202304031557020_AddLastLoginAndLastAuthenticatedToStaffs.designer.cs">
+      <DependentUpon>202304031557020_AddLastLoginAndLastAuthenticatedToStaffs.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\Appointment.cs" />
     <Compile Include="Models\Examination.cs" />
@@ -192,6 +196,9 @@
   <ItemGroup>
     <EmbeddedResource Include="Migrations\202303291059045_InitialCreate.resx">
       <DependentUpon>202303291059045_InitialCreate.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202304031557020_AddLastLoginAndLastAuthenticatedToStaffs.resx">
+      <DependentUpon>202304031557020_AddLastLoginAndLastAuthenticatedToStaffs.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

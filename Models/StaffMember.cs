@@ -14,6 +14,8 @@ namespace NhsImsApp.Models
         public bool IsNurse { get; set; }
         public bool IsAdmin { get; set; }
         public string Password { get; set; }
+        public DateTime LastLogin { get; set; }
+        public string LastAuthenticated { get; set; }
 
         public virtual ICollection<Appointment> Appointments { get; set; }
         public virtual ICollection<StaffPatient> StaffPatients { get; set; }

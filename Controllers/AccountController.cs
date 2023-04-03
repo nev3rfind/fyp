@@ -35,6 +35,13 @@ namespace NhsImsApp.Controllers
             {
                 return Json(new { success = false, error = "Invalid username or password." });
             }
+            
+            // Get dateTime of previous login
+            var previousLastLogin = user.LastLogin;
+            user.LastLogin = DateTime.Now;
+            // Save the changes to the database
+            _Context.SaveChanges();
+
 
             // Login successful
             return Json(new
@@ -47,7 +54,8 @@ namespace NhsImsApp.Controllers
                     fullName = user.FullName,
                     isDoctor = user.IsDoctor,
                     isNurse = user.IsNurse,
-                    isAdmin = user.IsAdmin
+                    isAdmin = user.IsAdmin,
+                    lastLogin = previousLastLogin,
                 }
             });
         }

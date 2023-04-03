@@ -111,7 +111,10 @@ $accordion-button-active-color: $yellow;
 .form-control {
     background-color: $neutral-grey-pale;
 }
-                      
+
+body {
+    background-color: #F5F7FA;
+}                      
 @import "_navigation-bar.scss";
 
 
