@@ -162,6 +162,7 @@
     <Content Include="src\index.html" />
     <Content Include="src\js\app.js" />
     <Content Include="src\js\router.js" />
+    <Content Include="src\js\store.js" />
     <Content Include="Web.config" />
     <Content Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
@@ -186,6 +187,7 @@
     <Content Include="src\components\HomePage.vue" />
     <Content Include="src\components\LoginPage.vue" />
     <Content Include="src\components\App.vue" />
+    <Content Include="src\components\NotFound.vue" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Migrations\202303291059045_InitialCreate.resx">
