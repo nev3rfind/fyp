@@ -56,7 +56,7 @@
                     });
 
                     if (response.data.success) {
-                        this.info = response
+                        this.info = response.data.user
                         console.log(response);
                         this.$store.commit("setUser", response.data.user);
                         this.$router.push({ name: "Dashboard" });

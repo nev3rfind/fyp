@@ -37,7 +37,19 @@ namespace NhsImsApp.Controllers
             }
 
             // Login successful
-            return Json(new { success = true, message = "Login successful" });
+            return Json(new
+            {
+                success = true,
+                message = "Login successful",
+                user = new
+                {
+                    username = user.Username,
+                    fullName = user.FullName,
+                    isDoctor = user.IsDoctor,
+                    IsNurse = user.IsNurse,
+                    IsAdmin = user.IsAdmin
+                }
+            });
         }
 
         private bool VerifyPassword(string inputPassword, string storedHashedPassword)
