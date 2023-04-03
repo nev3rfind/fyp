@@ -1,8 +1,8 @@
 ﻿<template>
-    test
-    <div>
-        <h1>Hello, {{ user.FullName }}</h1>
-        <!-- Rest of the home page content -->
+    <div class="main-content content-page">
+        <div class="container">
+            <h1>Hello, {{ user.fullName }}</h1>
+        </div>
     </div>
 
 </template>
@@ -19,4 +19,5 @@
 </script>
 
 <style lang="scss" scoped>
+
 </style>

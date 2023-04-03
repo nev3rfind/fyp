@@ -6,8 +6,16 @@
             <button class='btn'>
                 <i class='bx bxs-user-account'></i>
                 <ul class="dropdown">
-                    <li><a href="#" @click.prevent="userSettings"><i class='bx bx-cog'></i> User settings</a></li>
-                    <li><a href="#" @click.prevent="logOut"><i class='bx bx-log-out-circle'></i> Log Out</a></li>
+                    <li>
+                    <a href="#" @click.prevent="userSettings">
+                        <i class='bx bx-cog'></i> User settings
+                        </a>
+                    </li>
+                    <li>
+                    <a href="#" @click.prevent="logOut">
+                        <i class='bx bx-log-out-circle'></i> Log Out
+                        </a>
+                    </li>
                 </ul>
             </button>
         </div>
@@ -80,11 +88,11 @@
                 dropdownInstance.toggle();
             },
             userSettings() {
-                // Your logic for handling user settings
+                alert("Open user settings page");
             },
-            logout() {
+            logOut() {
                 this.$store.commit("setUser", null);
-                this.$router.push({ name: "LoginPage" });
+                this.$router.push({ name: "Login" });
             },
 
         },

@@ -46,8 +46,8 @@ namespace NhsImsApp.Controllers
                     username = user.Username,
                     fullName = user.FullName,
                     isDoctor = user.IsDoctor,
-                    IsNurse = user.IsNurse,
-                    IsAdmin = user.IsAdmin
+                    isNurse = user.IsNurse,
+                    isAdmin = user.IsAdmin
                 }
             });
         }
