@@ -5,6 +5,8 @@ using System.Web;
 using System.Web.Mvc;
 using System.Web.Optimization;
 using System.Web.Routing;
+using NhsImsApp.Data;
+using System.Data.Entity;
 
 namespace NhsImsApp
 {
@@ -19,6 +21,12 @@ namespace NhsImsApp
             // The data directory
             string dataDirectory = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "App_Data");
             AppDomain.CurrentDomain.SetData("DataDirectory", dataDirectory);
+
+            // Create new instance and pass it Intitialise method
+            using (var context = new ApplicationDbContext())
+            {
+                DbInitializer.Initialize(context);
+            }
         }
     }
 }

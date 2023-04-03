@@ -1,4 +1,5 @@
 ﻿import { createApp } from 'vue';
+import router from './router';
 import 'bootstrap';
 
 // load all solid icons
@@ -8,20 +9,16 @@ import { library } from '@fortawesome/fontawesome-svg-core';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 library.add(fas);
 
-import Layout from "../components/Layout";
-import NavigationBar from "../components/NavigationBar";
-import HomePage from "../components/HomePage";
+import App from "../components/App";
 
 // pull in main stylesheet
 require('../sass/app.scss');
 
 const app = createApp({
     components: {
-        Layout,
-        NavigationBar,
-        HomePage
+        App,
     }
-});
+}).use(router);
 
 app.component('font-awesome-icon', FontAwesomeIcon);
 
