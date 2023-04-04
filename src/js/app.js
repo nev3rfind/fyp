@@ -2,6 +2,7 @@
 import router from './router';
 import store from './store';
 import 'bootstrap';
+import VueApexCharts from "vue3-apexcharts";
 
 // load all solid icons
 // modify here to load individual icons as needed to reduce bundle size
@@ -20,7 +21,8 @@ const app = createApp({
         App,
     }
 }).use(store)
-    .use(router);
+    .use(router)
+    .component('apexchart', VueApexCharts);
 
 app.component('font-awesome-icon', FontAwesomeIcon);
 

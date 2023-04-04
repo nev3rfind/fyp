@@ -107,6 +107,8 @@ $accordion-button-active-color: $yellow;
 /* Accordion collapsing animation */
 @import "../../node_modules/bootstrap/scss/transitions";
 @import "../../node_modules/bootstrap/scss/forms";
+@import "../../node_modules/bootstrap/scss/progress";
+@import "../../node_modules/bootstrap/scss/dropdown";
 
 .form-control {
     background-color: $neutral-grey-pale;
@@ -114,7 +116,41 @@ $accordion-button-active-color: $yellow;
 
 body {
     background-color: #F5F7FA;
-}                      
+}
+
+.main-card {
+    border-color: $main-blue-bright;
+}
+/* customize dt scrollbar */
+::-webkit-scrollbar {
+    height: 5px;
+    width: 5px;
+}
+/* customize dt scrollbar */
+::-webkit-scrollbar-thumb {
+    background: RGB(189 189 189 / 0.75);
+    border-radius: 10px;
+}
+
+.btn-main {
+    background: $main-blue-bright;
+    color: $neutral-grey-pale;
+    white-space: normal;
+    text-align: center;
+    word-wrap: break-word;
+}
+.btn-main:hover {
+    background: $main-blue-dark;
+    color: $neutral-grey-pale;
+}
+
+.scrollable-menu {
+    height: auto;
+    max-height: 200px;
+    overflow-x: hidden;
+    background: #F5F7FA;
+}
+
 @import "_navigation-bar.scss";
 
 
