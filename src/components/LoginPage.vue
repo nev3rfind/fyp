@@ -32,7 +32,6 @@
                     </div>
                 </form>
             </div>
-            <p>data:  {{ info }}</p>
         </div>
     </div>
 </template>
