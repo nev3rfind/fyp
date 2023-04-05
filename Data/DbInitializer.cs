@@ -21,5 +21,6 @@ public static class DbInitializer
         StaffPatientsSeeder.Seed(context);
         AppointmentSeeder.Seed(context);
         ExaminationSeeder.Seed(context);
+        PatientExaminations.Seed(context);
     }
 }
