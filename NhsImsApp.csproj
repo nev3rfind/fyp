@@ -162,6 +162,7 @@
     <Compile Include="Seeders\ExaminationSeeder.cs" />
     <Compile Include="Seeders\MedicationSeeder.cs" />
     <Compile Include="Seeders\PatientExaminations.cs" />
+    <Compile Include="Seeders\PatientMedicationSeeder.cs" />
     <Compile Include="Seeders\PatientSeeder.cs" />
     <Compile Include="Seeders\StaffPatientsSeeder.cs" />
     <Compile Include="Seeders\StaffSeeder.cs" />
