@@ -47,18 +47,33 @@
                                             <h5 class="me-4">Patients waiting prescription</h5>
                                             <h5><a href="#">View all</a></h5>
                                         </div>
-                                        <div class="d-flex flex-column mt-3">
-                                            <span class="text-muted mb-2">24 completed</span>
+                                        <div class="d-flex flex-column mt-3" v-if="prescriptions.success">
+                                            <span class="text-muted mb-2">{{ prescriptions.renewedPrescriptions}}/{{prescriptions.totalPrescriptions}} completed</span>
                                             <div class="row progress-container">
                                                 <div class="col-9">
                                                     <div class="progress w-100">
-                                                        <div class="progress-bar bg-success" role="progressbar" style="width: 50%;" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100">
-                                                            <span class="progress-label">70%</span>
+                                                        <div class="progress-bar bg-success" role="progressbar" :style="'width: ' + prescriptions.renewedProcentage + '%'" aria-valuenow="{{ prescriptions.renewedProcentage }}" aria-valuemin="0" aria-valuemax="100">
+                                                            <span class="progress-label">{{ prescriptions.renewedProcentage }} %</span>
                                                         </div>
                                                     </div>
                                                 </div>
                                                 <div class="col-3 text-end progress-label-container">
-                                                    <a href="#" class="mt-2">20%</a>
+                                                    <a href="#" class="mt-2">{{ 100 - prescriptions.renewedProcentage }} %</a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="d-flex flex-column mt-3" v-else>
+                                            <span class="text-muted mb-2">No records found</span>
+                                            <div class="row progress-container">
+                                                <div class="col-9">
+                                                    <div class="progress w-100">
+                                                        <div class="progress-bar bg-success" role="progressbar" style="width:0%" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+                                                            <span class="progress-label">0%</span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-3 text-end progress-label-container">
+                                                    <a href="#" class="mt-2">0%</a>
                                                 </div>
                                             </div>
                                         </div>
@@ -143,6 +158,7 @@
 <script>
     import moment from 'moment';
     import VueApexCharts from "vue3-apexcharts";
+    import axios from 'axios';
     export default {
         components: {
             apexchart: VueApexCharts,
@@ -162,6 +178,7 @@
 
         data() {
             return {
+                prescriptions: [],
                 appointments: [
                     {
                         id: 1,
@@ -239,6 +256,9 @@
                 ],
             };
         },
+        created() {
+            this.fetchPrescription();
+        },
         methods: {
             generateDaysArray() {
                 const currentDate = new Date();
@@ -255,6 +275,20 @@
             },
             formatDate(date) {
                 return moment(date).format("HH:mm:ss DD/MM/YYYY");
+            },
+            // Getting prescription
+            async fetchPrescription() {
+                try {
+                    const response = await axios.post(`/api/prescription/GetPatientsPrescriptionByStaffId?StaffId=${this.user.staffId}`);
+                    if (response.data.success) {
+                        console.log(response.data);
+                       this.prescriptions = response.data;
+                    } else {
+                        console.log('Failed to get prescriptions');
+                    }
+                } catch (error) {
+                    console.error('Error fetching prescriptions:', error);
+                }
             },
         },
     };
