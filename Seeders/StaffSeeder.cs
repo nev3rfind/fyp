@@ -45,7 +45,9 @@ namespace NhsImsApp.Seeders
                             return "a" + f.Random.Number(1000000, 9999999);
                         }
                     })
-                    .RuleFor(s => s.Password, f => HashPassword("test123"));
+                    .RuleFor(s => s.Password, f => HashPassword("test123"))
+                    .RuleFor(s => s.LastLogin, f => f.Date.Between(new DateTime(2022, 1, 1), DateTime.Now.AddYears(-1)))
+                    .RuleFor(s => s.LastAuthenticated, f => f.PickRandom(new[] { "Pass", "MFA" }));
 
                 var staffs = staffFaker.Generate(100);
                 context.Staffs.AddRange(staffs);
