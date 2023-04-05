@@ -38,6 +38,7 @@ namespace NhsImsApp.Controllers
             
             // Get dateTime of previous login
             var previousLastLogin = user.LastLogin;
+            var previouslyAuthenticated = user.LastAuthenticated;
             user.LastLogin = DateTime.Now;
             // Save the changes to the database
             _Context.SaveChanges();
@@ -56,6 +57,7 @@ namespace NhsImsApp.Controllers
                     isNurse = user.IsNurse,
                     isAdmin = user.IsAdmin,
                     lastLogin = previousLastLogin,
+                    lastAuthenticated = previouslyAuthenticated,
                 }
             });
         }
