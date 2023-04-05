@@ -18,5 +18,6 @@ public static class DbInitializer
     {
         StaffSeeder.Seed(context);
         PatientSeeder.Seed(context);
+        StaffPatientsSeeder.Seed(context);
     }
 }
