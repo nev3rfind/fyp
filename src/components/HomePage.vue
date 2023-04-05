@@ -9,10 +9,11 @@
                                 <div class="media d-flex">
                                     <div class="media-body">
                                         <div class="d-flex justify-content-between align-items-center">
-                                            <h4>Hello, John Canbers</h4>
+                                            <h4>Hello, {{ user.fullName}}</h4>
                                             <h4><span class="badge rounded-pill bg-success">Full access</span></h4>
                                         </div>
-                                        <span>welcome to the <span class="fw-bold text-success">doctor</span> page</span>
+                                        <span v-if="user.isDoctor">welcome to the <span class="fw-bold text-success">doctor</span> page</span>
+                                        <span v-else="user.isNurse">welcome to the <span class="fw-bold text-info">nurse</span> page</span>
                                     </div>
                                 </div>
                             </div>
@@ -27,8 +28,8 @@
                                     <div class="media-body text-right">
                                         <span>
                                             <i class='bx bxs-info-square card-icon'></i>
-                                            Last logon at 16:56:20 13/10/2023 with
-                                            <span class="badge ms-2 rounded-pill bg-success">MFA</span>
+                                            Last logon at {{ formatDate(user.lastLogin) }} with
+                                            <span class="badge ms-2 rounded-pill bg-success">{{ user.lastAuthenticated}}</span>
                                         </span>
                                     </div>
                                 </div>
@@ -146,11 +147,6 @@
         components: {
             apexchart: VueApexCharts,
         },
-        methods: {
-            formatDate(date) {
-                return moment(date).format("HH:mm:ss DD/MM/YYYY");
-            },
-        },
         computed: {
             user() {
                 return this.$store.state.user;
@@ -256,6 +252,9 @@
             generateRandomData() {
                 const randomData = Array.from({ length: 14 }, () => Math.floor(Math.random() * 15) + 1);
                 return randomData;
+            },
+            formatDate(date) {
+                return moment(date).format("HH:mm:ss DD/MM/YYYY");
             },
         },
     };

@@ -9,7 +9,7 @@ const routes = [
         path: '/',
         name: 'Home',
         component: HomePage,
-        meta: { requiresAuth: false },
+        meta: { requiresAuth: true },
     },
     {
         path: '/login',
