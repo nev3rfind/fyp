@@ -158,6 +158,7 @@
     <Compile Include="Models\StaffOtp.cs" />
     <Compile Include="Models\StaffPatient.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Seeders\AppointmentSeeder.cs" />
     <Compile Include="Seeders\PatientSeeder.cs" />
     <Compile Include="Seeders\StaffPatientsSeeder.cs" />
     <Compile Include="Seeders\StaffSeeder.cs" />
