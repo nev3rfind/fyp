@@ -130,6 +130,7 @@
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="Controllers\AccountController.cs" />
+    <Compile Include="Controllers\AppointmentController.cs" />
     <Compile Include="Controllers\PrescriptionController.cs" />
     <Compile Include="Controllers\SpaController.cs" />
     <Compile Include="Data\ApplicationDbContext.cs" />
@@ -190,6 +191,7 @@
     <Folder Include="App_Data\" />
     <Folder Include="src\assets\images\" />
     <Folder Include="Views\Account\" />
+    <Folder Include="Views\Appointment\" />
     <Folder Include="Views\Prescription\" />
     <Folder Include="Views\Staff\" />
   </ItemGroup>

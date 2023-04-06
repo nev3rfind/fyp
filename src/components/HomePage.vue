@@ -87,8 +87,8 @@
                     <div class="card mb-2">
                         <div class="card-content">
                             <div class="card-body">
-                                <h5 class="me-4">Appointments history</h5>
-                                <apexchart type="bar" :options="chartOptions" :series="chartSeries"></apexchart>
+                                <h5 class="me-4">Appointments history (last 12 months)</h5>
+                                <apexchart ref="chart" type="bar" :options="chartOptions" :series="chartSeries"></apexchart>
                             </div>
                         </div>
                     </div>
@@ -179,6 +179,7 @@
         data() {
             return {
                 prescriptions: [],
+                groupedAppointments: [],
                 appointments: [
                     {
                         id: 1,
@@ -203,6 +204,7 @@
                 ],
                 chartOptions: {
                     chart: {
+                        fontFamily: 'Roboto, sans-serif',
                         // Columns appearing animation
                         animations: {
                             enabled: true,
@@ -219,24 +221,35 @@
                         },
                         height: 280,
                         type: "bar",
+                        stacked: true,
+                        stackType: '10%',
                         toolbar: {
                             show: false,
                         },
                     },
                     plotOptions: {
                         bar: {
+                            dataLabels: {
+                                enabled: false,
+                            },
                             horizontal: false,
                         },
                     },
                     xaxis: {
-                        categories: this.generateDaysArray(),
+                        categories: [],
                         title: {
-                            text: "Day",
+                            text: "Month",
+                            style: {
+                                fontFamily: 'Roboto, sans-serif',
+                            },
                         },
                     },
                     yaxis: {
                         title: {
-                            text: "Appointments",
+                            text: "Appointments count",
+                            style: {
+                                fontFamily: 'Roboto, sans-serif',
+                            },
                         },
                     },
                     tooltip: {
@@ -246,33 +259,21 @@
                             },
                         },
                     },
-                    colors: ["#1E90FF"],
+                    colors: ["#0072CE"],
                 },
                 chartSeries: [
                     {
                         name: "Appointments",
-                        data: this.generateRandomData(),
+                        data: [],
                     },
                 ],
             };
         },
         created() {
             this.fetchPrescription();
+            this.fetchGroupedAppointments();
         },
         methods: {
-            generateDaysArray() {
-                const currentDate = new Date();
-                const startDay = currentDate.getDate() - 13;
-                const daysArray = Array.from({ length: 14 }, (_, i) => {
-                    const day = new Date(currentDate.getFullYear(), currentDate.getMonth(), startDay + i);
-                    return day.getDate();
-                });
-                return daysArray;
-            },
-            generateRandomData() {
-                const randomData = Array.from({ length: 14 }, () => Math.floor(Math.random() * 15) + 1);
-                return randomData;
-            },
             formatDate(date) {
                 return moment(date).format("HH:mm:ss DD/MM/YYYY");
             },
@@ -288,6 +289,37 @@
                     }
                 } catch (error) {
                     console.error('Error fetching prescriptions:', error);
+                }
+            },
+            // Getting prescription
+            async fetchGroupedAppointments() {
+                try {
+                    const response = await axios.post(`/api/appointment/GetAppointmentsByStaffId?staffId=${this.user.staffId}`);
+                    if (response.data.success) {
+                        console.log(response.data);
+                        this.groupedAppointments = response.data.groupedAppointments;
+
+                        // Update chart data with fetched data
+                        const months = this.groupedAppointments.map(a => a.Month);
+                        const count = this.groupedAppointments.map(a => a.Count);
+
+                        this.$refs.chart.updateOptions({
+                            xaxis: {
+                                categories: months
+                            },
+                            series: [
+                                {
+                                    name: "Appointments",
+                                    data: count
+                                }
+                            ]
+                        });
+
+                    } else {
+                        console.log('Failed to get grouped appointments');
+                    }
+                } catch (error) {
+                    console.error('Error fetching grouped appointments:', error);
                 }
             },
         },
