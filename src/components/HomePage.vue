@@ -2,65 +2,68 @@
     <div class="main-content content-page">
         <div class="container">
             <div class="row">
-                <div class="col-xl-4 col-sm-6 col-12">
+                <div class="col-xl-4 col-sm-12 col-12">
                     <div class="card mb-2 main-card">
                         <div class="card-content">
                             <div class="card-body">
-                                <div class="media d-flex">
-                                    <div class="media-body">
-                                        <div class="d-flex justify-content-between align-items-center">
-                                            <h4>Hello, {{ user.fullName}}</h4>
-                                            <h4><span class="badge rounded-pill bg-success">Full access</span></h4>
-                                        </div>
-                                        <span v-if="user.isDoctor">welcome to the <span class="fw-bold text-success">doctor</span> page</span>
-                                        <span v-else="user.isNurse">welcome to the <span class="fw-bold text-info">nurse</span> page</span>
-                                    </div>
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <h4>Hello, {{ user.fullName}}</h4>
+                                    <h4><span class="badge rounded-pill bg-success">Full access</span></h4>
                                 </div>
+                                <span v-if="user.isDoctor">welcome to the <span class="fw-bold text-success">doctor</span> page</span>
+                                <span v-else="user.isNurse">welcome to the <span class="fw-bold text-info">nurse</span> page</span>
                             </div>
                         </div>
                     </div>
                 </div>
-                <div class="col-xl-4 col-sm-6 col-12">
+                <div class="col-xl-4 col-sm-12 col-12">
                     <div class="card mb-2">
                         <div class="card-content">
                             <div class="card-body">
-                                <div class="media d-flex">
-                                    <div class="media-body text-right">
-                                        <span>
-                                            <i class='bx bxs-info-square card-icon'></i>
-                                            Last logon at {{ formatDate(user.lastLogin) }} with
-                                            <span class="badge ms-2 rounded-pill bg-success">{{ user.lastAuthenticated}}</span>
-                                        </span>
-                                    </div>
-                                </div>
+                                <span>
+                                    <i class='bx bxs-info-square card-icon'></i>
+                                    Last logon at {{ formatDate(user.lastLogin) }} with
+                                    <span class="badge ms-2 rounded-pill bg-success">{{ user.lastAuthenticated}}</span>
+                                </span>       
                             </div>
                         </div>
                     </div>
                 </div>
-                <div class="col-xl-4 col-sm-6 col-12">
+                <div class="col-xl-4 col-sm-12 col-md-12 col-12">
                     <div class="card mb-2">
                         <div class="card-content">
                             <div class="card-body">
-                                <div class="media d-flex align-items-center">
-                                    <div class="media-body">
-                                        <div class="d-flex justify-content-between align-items-center">
-                                            <h5 class="me-4">Patients waiting prescription</h5>
-                                            <h5><a href="#">View all</a></h5>
-                                        </div>
-                                        <div class="d-flex flex-column mt-3">
-                                            <span class="text-muted mb-2">24 completed</span>
-                                            <div class="row progress-container">
-                                                <div class="col-9">
-                                                    <div class="progress w-100">
-                                                        <div class="progress-bar bg-success" role="progressbar" style="width: 50%;" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100">
-                                                            <span class="progress-label">70%</span>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div class="col-3 text-end progress-label-container">
-                                                    <a href="#" class="mt-2">20%</a>
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <h5 class="me-4">Patients waiting prescription</h5>
+                                    <h5><a href="#">View all</a></h5>
+                                </div>
+                                <div class="d-flex flex-column mt-3" v-if="prescriptions.success">
+                                    <span class="text-muted mb-2">{{ prescriptions.renewedPrescriptions}}/{{prescriptions.totalPrescriptions}} completed</span>
+                                    <div class="row progress-container">
+                                        <div class="col-9">
+                                            <div class="progress w-100">
+                                                <div class="progress-bar bg-success" role="progressbar" :style="'width: ' + prescriptions.renewedProcentage + '%'" aria-valuenow="{{ prescriptions.renewedProcentage }}" aria-valuemin="0" aria-valuemax="100">
+                                                    <span class="progress-label">{{ prescriptions.renewedProcentage }} %</span>
                                                 </div>
                                             </div>
+                                        </div>
+                                        <div class="col-3 text-end progress-label-container">
+                                            <a href="#" class="mt-2">{{ 100 - prescriptions.renewedProcentage }} %</a>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="d-flex flex-column mt-3" v-else>
+                                    <span class="text-muted mb-2">No records found</span>
+                                    <div class="row progress-container">
+                                        <div class="col-9">
+                                            <div class="progress w-100">
+                                                <div class="progress-bar bg-success" role="progressbar" style="width:0%" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+                                                    <span class="progress-label">0%</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-3 text-end progress-label-container">
+                                            <a href="#" class="mt-2">0%</a>
                                         </div>
                                     </div>
                                 </div>
@@ -72,31 +75,39 @@
                     <div class="card mb-2">
                         <div class="card-content">
                             <div class="card-body">
-                                <h5 class="me-4">Appointments history</h5>
-                                <apexchart type="bar" :options="chartOptions" :series="chartSeries"></apexchart>
+                                <h5 class="me-4">Appointments history (last 12 months)</h5>
+                                <apexchart ref="chart" type="bar" :options="chartOptions" :series="chartSeries"></apexchart>
                             </div>
                         </div>
                     </div>
                 </div>
-                <div class="col-xl-4 col-sm-6 col-12">
+                <div class="col-xl-6 col-sm-12 col-12">
                     <div class="card mb-2">
                         <div class="card-content">
                             <div class="card-body">
                                 <h5 class="me-4">Upcoming appointments</h5>
-                                <div class="table-responsive">
+                                <h6 v-if="isObjectEmpty(upcomingAppointments)">No upcoming appointments found</h6>
+                                <div v-else class="table-responsive">
                                     <table class="mt-2 table table-centered table-hover table-borderless">
                                         <thead>
                                             <tr>
                                                 <th scope="col">#</th>
                                                 <th scope="col">Patient Name</th>
-                                                <th scope="col">Appointment Time</th>
+                                                <th scope="col">Appoint. Time</th>
+                                                <th class="ps-5" scope="col">Status</th>
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            <tr v-for="(appointment, index) in formattedAppointments" :key="appointment.id">
+                                            <tr v-for="(appointment, index) in upcomingAppointments" :key="appointment.AppointmentId">
                                                 <td scope="row">{{ index + 1 }}</td>
-                                                <td>{{ appointment.patientName }}</td>
-                                                <td>{{ appointment.appointmentTime }}</td>
+                                                <td>{{ appointment.PatientFullName }}</td>
+                                                <td>{{ formatAppointmentDate(appointment.AppointmentDate) }}</td>
+                                                <td>
+                                                    <span v-if="appointment.Status === 'Scheduled'" class="badge rounded-pill bg-success table-badge">{{ appointment.Status }}</span>
+                                                    <span v-else-if="appointment.Status === 'Cancelled'" class="badge rounded-pill bg-danger table-badge">{{ appointment.Status }}</span>
+                                                    <span v-else-if="appointment.Status === 'Attended'" class="badge rounded-pill bg-info table-badge">{{ appointment.Status }}</span>
+                                                    <span v-else="appointment.Status === 'Not Attended'" class="badge rounded-pill bg-warning table-badge">{{ appointment.Status }}</span>
+                                                </td>
                                             </tr>
                                         </tbody>
                                     </table>
@@ -105,7 +116,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-xl-4 col-sm-6 col-12">
+                <div class="col-xl-6 col-sm-12 col-12">
                     <div class="card mb-2">
                         <div class="card-content">
                             <div class="card-body">
@@ -113,24 +124,15 @@
                                     <h5 class="me-4">Total patients:</h5>
                                     <div class="btn-group">
                                         <button type="button" class="btn btn-main dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-                                            109 patients assigned
+                                            {{ patientsCount }} patients assigned
                                         </button>
                                         <ul class="dropdown-menu scrollable-menu">
-                                            <li><a class="dropdown-item" href="#">Action</a></li>
-                                            <li><a class="dropdown-item" href="#">Another action</a></li>
-                                            <li><a class="dropdown-item" href="#">Something else here</a></li>
+                                            <li><a class="dropdown-item" href="#">{{ patientsCount }} total</a></li>
                                             <li><hr class="dropdown-divider"></li>
-                                            <li><a class="dropdown-item" href="#">Separated link</a></li>
-                                            <li><a class="dropdown-item" href="#">Action</a></li>
-                                            <li><a class="dropdown-item" href="#">Another action</a></li>
-                                            <li><a class="dropdown-item" href="#">Something else here</a></li>
-                                            <li><a class="dropdown-item" href="#">Action</a></li>
-                                            <li><a class="dropdown-item" href="#">Another action</a></li>
-                                            <li><a class="dropdown-item" href="#">Something else here</a></li>
+                                            <li v-for="(patient, index) in patients" :key="patient.PatientId"><a class="dropdown-item" href="#">{{ patient.fullName }}</a></li>
                                         </ul>
                                     </div>
                                 </div>
-                                
                             </div>
                         </div>
                     </div>
@@ -143,6 +145,7 @@
 <script>
     import moment from 'moment';
     import VueApexCharts from "vue3-apexcharts";
+    import axios from 'axios';
     export default {
         components: {
             apexchart: VueApexCharts,
@@ -151,41 +154,18 @@
             user() {
                 return this.$store.state.user;
             },
-            formattedAppointments() {
-                return this.appointments.map((appointment) => {
-                    const date = new Date(appointment.appointmentTime);
-                    const formattedDate = `${date.getHours().toString().padStart(2, "0")}:${date.getMinutes().toString().padStart(2, "0")} ${date.getDate().toString().padStart(2, "0")}/${(date.getMonth() + 1).toString().padStart(2, "0")}/${date.getFullYear().toString().substr(-2)}`;
-                    return { ...appointment, appointmentTime: formattedDate };
-                });
-            },
         },
 
         data() {
             return {
-                appointments: [
-                    {
-                        id: 1,
-                        patientName: "John Doe",
-                        appointmentTime: "2023-03-24T09:00:00",
-                    },
-                    {
-                        id: 2,
-                        patientName: "Jane Smith",
-                        appointmentTime: "2023-03-25T10:30:00",
-                    },
-                    {
-                        id: 3,
-                        patientName: "Michael Johnson",
-                        appointmentTime: "2023-03-26T11:15:00",
-                    },
-                    {
-                        id: 4,
-                        patientName: "Emma Brown",
-                        appointmentTime: "2023-03-27T13:45:00",
-                    },
-                ],
+                prescriptions: [],
+                groupedAppointments: [],
+                upcomingAppointments: [],
+                patients: [],
+                patientsCount: 0,
                 chartOptions: {
                     chart: {
+                        fontFamily: 'Roboto, sans-serif',
                         // Columns appearing animation
                         animations: {
                             enabled: true,
@@ -202,24 +182,35 @@
                         },
                         height: 280,
                         type: "bar",
+                        stacked: true,
+                        stackType: '10%',
                         toolbar: {
                             show: false,
                         },
                     },
                     plotOptions: {
                         bar: {
+                            dataLabels: {
+                                enabled: false,
+                            },
                             horizontal: false,
                         },
                     },
                     xaxis: {
-                        categories: this.generateDaysArray(),
+                        categories: [],
                         title: {
-                            text: "Day",
+                            text: "Month",
+                            style: {
+                                fontFamily: 'Roboto, sans-serif',
+                            },
                         },
                     },
                     yaxis: {
                         title: {
-                            text: "Appointments",
+                            text: "Appointments count",
+                            style: {
+                                fontFamily: 'Roboto, sans-serif',
+                            },
                         },
                     },
                     tooltip: {
@@ -229,33 +220,110 @@
                             },
                         },
                     },
-                    colors: ["#1E90FF"],
+                    colors: ["#0072CE"],
                 },
                 chartSeries: [
                     {
                         name: "Appointments",
-                        data: this.generateRandomData(),
+                        data: [],
                     },
                 ],
             };
         },
+        created() {
+            this.fetchPrescription();
+            this.fetchGroupedAppointments();
+            this.fetchUpcomingAppointments();
+            this.fetchStaffPatients();
+        },
         methods: {
-            generateDaysArray() {
-                const currentDate = new Date();
-                const startDay = currentDate.getDate() - 13;
-                const daysArray = Array.from({ length: 14 }, (_, i) => {
-                    const day = new Date(currentDate.getFullYear(), currentDate.getMonth(), startDay + i);
-                    return day.getDate();
-                });
-                return daysArray;
-            },
-            generateRandomData() {
-                const randomData = Array.from({ length: 14 }, () => Math.floor(Math.random() * 15) + 1);
-                return randomData;
-            },
             formatDate(date) {
                 return moment(date).format("HH:mm:ss DD/MM/YYYY");
             },
+            formatAppointmentDate(date) {
+                return moment(date).format("HH:MM DD/MM");
+            },
+            isObjectEmpty(obj) {
+                return Object.keys(obj).length === 0;
+            },
+            // Getting prescription
+            async fetchPrescription() {
+                try {
+                    const response = await axios.post(`/api/prescription/GetPatientsPrescriptionByStaffId?StaffId=${this.user.staffId}`);
+                    if (response.data.success) {
+                        console.log(response.data);
+                       this.prescriptions = response.data;
+                    } else {
+                        console.log('Failed to get prescriptions');
+                    }
+                } catch (error) {
+                    console.error('Error fetching prescriptions:', error);
+                }
+            },
+            // Getting prescription
+            async fetchGroupedAppointments() {
+                try {
+                    const response = await axios.post(`/api/appointment/GetAppointmentsByStaffId?staffId=${this.user.staffId}`);
+                    if (response.data.success) {
+                        console.log(response.data);
+                        this.groupedAppointments = response.data.groupedAppointments;
+
+                        // Update chart data with fetched data
+                        const months = this.groupedAppointments.map(a => a.Month);
+                        const count = this.groupedAppointments.map(a => a.Count);
+
+                        this.$refs.chart.updateOptions({
+                            xaxis: {
+                                categories: months
+                            },
+                            series: [
+                                {
+                                    name: "Appointments",
+                                    data: count
+                                }
+                            ]
+                        });
+
+                    } else {
+                        console.log('Failed to get grouped appointments');
+                    }
+                } catch (error) {
+                    console.error('Error fetching grouped appointments:', error);
+                }
+            },
+            // Get Upcoming appointments
+            async fetchUpcomingAppointments() {
+                try {
+                    const response = await axios.post(`/api/appointment/GetUpcomingAppointmentsByStaffId?staffId=${this.user.staffId}`)
+                    if (response.data.success) {
+                        console.log(response.data.upcomingAppointments);
+                        this.upcomingAppointments = response.data.upcomingAppointments;
+
+                    } else {
+                        this.upcomingAppointments = null;
+                        console.log('Failed to get upcoming appointments');
+                    }
+                } catch (error) {
+                    console.error('Error fetching upcoming appointments:', error);
+                }
+            },
+            // Get Patients assigned to the current logged in staff
+            async fetchStaffPatients() {
+                try {
+                    const response = await axios.post(`/api/patient/GetPatientsByStaffId?StaffId=${this.user.staffId}`)
+                    if (response.data.success) {
+                        console.log(response.data);
+                        this.patients = response.data.patients;
+                        this.patientsCount = response.data.patientsCount;
+
+                    } else {
+                        this.patients = null;
+                    }
+                } catch (error) {
+                    console.error('Error fetching patients:', error);
+                }
+            }
+
         },
     };
 </script>
@@ -309,5 +377,10 @@
     .table-responsive {
         max-height: 200px;
         overflow-y: scroll;
+    }
+    .table-badge {
+        font-size: 14px;
+        font-weight: 500;
+        color: $neutral-black;
     }
 </style>

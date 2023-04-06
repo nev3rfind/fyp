@@ -51,6 +51,7 @@ namespace NhsImsApp.Controllers
                 message = "Login successful",
                 user = new
                 {
+                    staffId = user.StaffId,
                     username = user.Username,
                     fullName = user.FullName,
                     isDoctor = user.IsDoctor,
