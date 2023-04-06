@@ -110,11 +110,16 @@ $accordion-button-active-color: $yellow;
 @import "../../node_modules/bootstrap/scss/progress";
 @import "../../node_modules/bootstrap/scss/dropdown";
 
+
+/* Main font */
+@import url('https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;0,1000;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900;1,1000&display=swap');
+
 .form-control {
     background-color: $neutral-grey-pale;
 }
 
 body {
+    font-family: 'Nunito', sans-serif!important;
     background-color: #F5F7FA;
 }
 
@@ -149,6 +154,11 @@ body {
     max-height: 200px;
     overflow-x: hidden;
     background: #F5F7FA;
+}
+.table-badge {
+    font-size: 14px;
+    font-weight: 300;
+    color: $neutral-black;
 }
 
 @import "_navigation-bar.scss";
