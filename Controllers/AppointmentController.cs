@@ -9,6 +9,7 @@ using NhsImsApp.Data;
 using System.Security.Cryptography;
 using System.Text;
 using System.Globalization;
+using System.Data.Entity;
 
 namespace NhsImsApp.Controllers
 {
@@ -61,6 +62,41 @@ namespace NhsImsApp.Controllers
 
             });
                 
+        }
+
+        [HttpPost]
+        public ActionResult GetUpcomingAppointmentsByStaffId(int staffId)
+        {
+            var now = DateTime.UtcNow;
+
+            var appointments = _Context.Appointments
+                .Where(a => a.StaffId == staffId && a.AppointmentDate >= now)
+                .Include(a => a.Patient) // Include the related Patient data
+                .OrderBy(a => a.AppointmentDate) // Order by the appointment date (ascending)
+                .Take(10) // Take the top 10 closest appointments
+                .ToList();
+
+            if (appointments.Count > 0)
+            {
+                var upcomingAppointments = appointments.Select(a => new
+                {
+                    a.AppointmentId,
+                    a.Status,
+                    a.AppointmentDate,
+                    PatientFullName = a.Patient.FullName,
+                }).ToList();
+
+                return Json(new
+                {
+                    success = true,
+                    upcomingAppointments = upcomingAppointments
+                });
+            }
+
+            return Json(new
+            {
+                success = false
+            });
         }
     }
 }

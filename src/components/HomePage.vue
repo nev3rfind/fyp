@@ -93,7 +93,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-xl-4 col-sm-6 col-12">
+                <div class="col-xl-6 col-sm-12 col-12">
                     <div class="card mb-2">
                         <div class="card-content">
                             <div class="card-body">
@@ -104,14 +104,21 @@
                                             <tr>
                                                 <th scope="col">#</th>
                                                 <th scope="col">Patient Name</th>
-                                                <th scope="col">Appointment Time</th>
+                                                <th scope="col">Appoint. Time</th>
+                                                <th class="text-center" scope="col">Status</th>
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            <tr v-for="(appointment, index) in formattedAppointments" :key="appointment.id">
+                                            <tr v-for="(appointment, index) in upcomingAppointments" :key="appointment.AppointmentId">
                                                 <td scope="row">{{ index + 1 }}</td>
-                                                <td>{{ appointment.patientName }}</td>
-                                                <td>{{ appointment.appointmentTime }}</td>
+                                                <td>{{ appointment.PatientFullName }}</td>
+                                                <td>{{ formatAppointmentDate(appointment.AppointmentDate) }}</td>
+                                                <td>
+                                                    <span v-if="appointment.Status === 'Scheduled'" class="badge rounded-pill bg-success">{{ appointment.Status }}</span>
+                                                    <span v-else-if="appointment.Status === 'Cancelled'" class="badge rounded-pill bg-danger">{{ appointment.Status }}</span>
+                                                    <span v-else-if="appointment.Status === 'Attended'" class="badge rounded-pill bg-info">{{ appointment.Status }}</span>
+                                                    <span v-else="appointment.Status === 'Not Attended'" class="badge rounded-pill bg-warning">{{ appointment.Status }}</span>
+                                                </td>
                                             </tr>
                                         </tbody>
                                     </table>
@@ -167,41 +174,13 @@
             user() {
                 return this.$store.state.user;
             },
-            formattedAppointments() {
-                return this.appointments.map((appointment) => {
-                    const date = new Date(appointment.appointmentTime);
-                    const formattedDate = `${date.getHours().toString().padStart(2, "0")}:${date.getMinutes().toString().padStart(2, "0")} ${date.getDate().toString().padStart(2, "0")}/${(date.getMonth() + 1).toString().padStart(2, "0")}/${date.getFullYear().toString().substr(-2)}`;
-                    return { ...appointment, appointmentTime: formattedDate };
-                });
-            },
         },
 
         data() {
             return {
                 prescriptions: [],
                 groupedAppointments: [],
-                appointments: [
-                    {
-                        id: 1,
-                        patientName: "John Doe",
-                        appointmentTime: "2023-03-24T09:00:00",
-                    },
-                    {
-                        id: 2,
-                        patientName: "Jane Smith",
-                        appointmentTime: "2023-03-25T10:30:00",
-                    },
-                    {
-                        id: 3,
-                        patientName: "Michael Johnson",
-                        appointmentTime: "2023-03-26T11:15:00",
-                    },
-                    {
-                        id: 4,
-                        patientName: "Emma Brown",
-                        appointmentTime: "2023-03-27T13:45:00",
-                    },
-                ],
+                upcomingAppointments: [],
                 chartOptions: {
                     chart: {
                         fontFamily: 'Roboto, sans-serif',
@@ -272,10 +251,14 @@
         created() {
             this.fetchPrescription();
             this.fetchGroupedAppointments();
+            this.fetchUpcomingAppointments();
         },
         methods: {
             formatDate(date) {
                 return moment(date).format("HH:mm:ss DD/MM/YYYY");
+            },
+            formatAppointmentDate(date) {
+                return moment(date).format("HH:MM DD/MM");
             },
             // Getting prescription
             async fetchPrescription() {
@@ -322,6 +305,22 @@
                     console.error('Error fetching grouped appointments:', error);
                 }
             },
+            // Get Upcoming appointments
+            async fetchUpcomingAppointments() {
+                try {
+                    const response = await axios.post(`/api/appointment/GetUpcomingAppointmentsByStaffId?staffId=${this.user.staffId}`)
+                    if (response.data.success) {
+                        console.log(response.data.upcomingAppointments);
+                        this.upcomingAppointments = response.data.upcomingAppointments;
+
+                    } else {
+                        console.log('Failed to get upcoming appointments');
+                    }
+                } catch (error) {
+                    console.error('Error fetching upcoming appointments:', error);
+                }
+            }
+
         },
     };
 </script>
