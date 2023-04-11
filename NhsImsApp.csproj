@@ -208,6 +208,7 @@
     <Content Include="src\components\App.vue" />
     <Content Include="src\components\NotFound.vue" />
     <Content Include="src\components\PatientSearch.vue" />
+    <Content Include="src\components\PatientDetails.vue" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Migrations\202303291059045_InitialCreate.resx">

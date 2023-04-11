@@ -99,5 +99,37 @@ namespace NhsImsApp.Controllers
 
             return Json(new { success = false });
         }
+
+        [HttpPost]
+        public ActionResult GetPatientProceduresByPatientId(int patientId)
+        {
+            var procedures = _Context.PatientProcedures
+                .Where(a => a.PatientId == patientId)
+                .Include(a => a.Procedure)
+                .ToList();
+
+            var proceduresCount = procedures.Count();
+
+            if (proceduresCount > 0)
+            {
+                var proceduresData = procedures.Select(a => new
+                {
+                    a.ProcedureId,
+                    a.Description,
+                    procedureName = a.Procedure.ProcedureName
+                }).ToList();
+
+                return Json(new
+                {
+                    success = true,
+                    proceduresCount = proceduresCount,
+                    proceduresData = proceduresData
+
+                });
+            }
+
+            return Json(new { success = false });
+
+        }
     }
 }
