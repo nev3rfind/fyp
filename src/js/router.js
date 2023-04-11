@@ -27,7 +27,7 @@ const routes = [
         path: '/search',
         name: 'Search',
         component: PatientSearch,
-        meta: { requiresAuth: false },
+        meta: { requiresAuth: true },
     },
 ];
 

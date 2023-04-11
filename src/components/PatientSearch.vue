@@ -8,13 +8,22 @@
                     </div>
                     <div class="search-bar position-relative pb-4">
                         <div class="input-container">
-                            <input id="searchBar" type="text" autocomplete="off" class="form-control input-icon" placeholder="Search">
+                            <input id="searchBar" v-model="searchBar" type="text" autocomplete="off" class="form-control input-icon" placeholder="Search">
                             <i class='bx bx-search-alt search-icon'></i>
                         </div>
-                        <ul id="patientsResults">
-                            <li>Patient A <i class='bx bxs-lock-open text-success'></i></li>
-                            <li>Patient A <i class='bx bxs-lock text-danger'></i></li>
-                            <li>Patient A</li>
+                        <ul id="patientsResults" v-if="searchBar.length >= 3">
+                            <li v-if="!patientsResults || patientsResults.length === 0">No matching patients</li>
+                            <li v-else v-for="(patient, index) in patientsResults" :key="patient.patientId">
+                                {{ patient.fullName }}
+                                <i
+                                   v-if="patient.belongsToStaff"
+                                   class="bx bxs-lock-open text-success"
+                                   ></i>
+                                <i
+                                   v-else
+                                   class="bx bxs-lock text-danger"
+                                   ></i>
+                            </li>
                         </ul>
                     </div>
                 </div>
@@ -24,10 +33,51 @@
 </template>
 
 <script>
+    import axios from "axios";
+
+    export default {
+        data() {
+            const staffId = this.$store.state.user ? this.$store.state.user.staffId : null;
+            return {
+                staffId: staffId,
+                searchBar: "",
+                patientsResults: [],
+            }
+        },
+        watch: {
+            searchBar(searchTerm) {
+                if (searchTerm.length >= 3) {
+                    this.searchPatients(searchTerm);
+                } else {
+                    this.patientsResults = [];
+                }
+            }
+        },
+        methods: {
+            async searchPatients(searchTerm) {
+                try {
+                    const response = await axios.post("/api/patient/GetPatientsBySearchTerm", {
+                        staffId: this.staffId,
+                        searchTerm: searchTerm,
+                    });
+
+                    if (response.data.success) {
+                        this.patientsResults = response.data.patients;
+                        console.log(this.patientsResults);
+                    } else {
+                        this.patientsResults = [];
+                    }
+                } catch (error) {
+                    console.error("Error fetch patients: ", error);
+                    this.patientsResults = [];
+                }
+            },
+        },
+    }
 
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss">
     @import "../sass/app.scss";
 
     .center-content {
@@ -47,43 +97,40 @@
         }
     }
 
+    .search-bar .input-container {
+        position: relative;
+    }
 
-    .search-bar {
-        .input-container {
-            position: relative;
+    .search-bar input {
+        border-radius: 2px;
+        border: 2px solid $main-blue;
+        font-family: Nunito;
+        color: $neutral-black;
+        font-weight: 300;
+        background-color: $neutral-grey-pale;
+        outline: 0;
+        padding: .45rem .9rem .45rem 2.4rem;
+    }
+
+    .search-bar input:focus {
+        border-radius: 4px;
+        border: 4px solid $yellow-warm;
+        font-family: Nunito;
+        color: $neutral-black;
+        font-weight: 700;
+
+        + .search-icon {
+            color: $yellow-warm;
         }
+    }
 
-        input {
-            border-radius: 2px;
-            border: 2px solid $main-blue;
-            font-family: Nunito;
-            color: $neutral-black;
-            font-weight: 300;
-            background-color: $neutral-grey-pale;
-            outline: 0;
-            padding: .45rem .9rem .45rem 2.4rem;
-        }
-
-        input:focus {
-            border-radius: 4px;
-            border: 4px solid $yellow-warm;
-            font-family: Nunito;
-            color: $neutral-black;
-            font-weight: 700;
-
-            + .search-icon {
-                color: $yellow-warm;
-            }
-        }
-
-        .search-icon {
-            position: absolute;
-            top: 50%;
-            left: 12px;
-            font-size: 18px;
-            transform: translateY(-50%);
-            color: $main-blue;
-        }
+    .search-bar .search-icon {
+        position: absolute;
+        top: 50%;
+        left: 12px;
+        font-size: 18px;
+        transform: translateY(-50%);
+        color: $main-blue;
     }
 
     #patientsResults {
@@ -138,7 +185,7 @@
             width: 100%;
         }
 
-        #countriesResults {
+        #patientsResults {
             width: 100%;
         }
 
