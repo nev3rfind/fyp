@@ -29,13 +29,13 @@
             <div class="logo-title"></div>
             <ul class="main-nav" ref="responsiveNav" :class="navClasses">
                 <li class="main-nav-item">
-                    <a href="/index.html" class="main-nav-link">
+                    <a href="#" @click.prevent="navigateToRoute('/')" class="main-nav-link">
                         <i class="bx bxs-home"></i>
                         <span class="menu-link">Home</span>
                     </a>
                 </li>
                 <li class="main-nav-item">
-                    <a href="/index.html" class="main-nav-link">
+                    <a href="#" @click.prevent="navigateToRoute('/search')" class="main-nav-link">
                         <i class="bx bx-search-alt"></i>
                         <span class="menu-link">Patients search</span>
                     </a>
@@ -93,6 +93,9 @@
             logOut() {
                 this.$store.commit("setUser", null);
                 this.$router.push({ name: "Login" });
+            },
+            navigateToRoute(route) {
+                this.$router.push(route);
             },
 
         },

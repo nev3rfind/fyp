@@ -2,6 +2,7 @@
 import HomePage from '../components/HomePage';
 import LoginPage from '../components/LoginPage';
 import NotFound from '../components/NotFound';
+import PatientSearch from '../components/PatientSearch';
 import store from "./store";
 
 const routes = [
@@ -21,6 +22,12 @@ const routes = [
         path: '/:pathMatch(.*)*', // Add a wildcard route for non-existing paths
         name: 'NotFound',
         component: NotFound, // 404 component
+    },
+    {
+        path: '/search',
+        name: 'Search',
+        component: PatientSearch,
+        meta: { requiresAuth: true },
     },
 ];
 

@@ -55,9 +55,49 @@ namespace NhsImsApp.Controllers
             }
 
             return Json(new { success = false });
+   
+        }
 
-            
-            
+        /// <summary>
+        /// Get all patients matching search term
+        /// </summary>
+        /// <param name="StaffId"></param>
+        /// <param name="searchTerm"></param>
+        /// <returns>Matchign patients list</returns>
+        [HttpPost]
+        public ActionResult GetPatientsBySearchTerm(int staffId, string searchTerm)
+        {
+            if (string.IsNullOrWhiteSpace(searchTerm))
+            {
+                return Json(new { success = false });
+            }
+
+            var patientsData = _Context.Patients
+                .Where(a => a.FullName.Contains(searchTerm))
+                .ToList();
+
+            if (patientsData.Count > 0)
+            {
+                var staffPatients = _Context.StaffPatients
+                    .Where(a => a.StaffId == staffId)
+                    .ToList();
+
+                var patients = patientsData.Select(a => new
+                {
+                    a.PatientId,
+                    fullName = a.FullName,
+                    belongsToStaff = staffPatients.Any(sp => sp.PatientId == a.PatientId)
+                }).ToList();
+
+                return Json(new
+                {
+                    success = true,
+                    patientsCount = patients.Count,
+                    patients = patients
+                });
+            }
+
+            return Json(new { success = false });
         }
     }
 }
