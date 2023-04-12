@@ -35,7 +35,7 @@ const routes = [
         name: "PatientDetails",
         component: PatientDetails,
         props: true,
-        meta: { requiresAuth: true },
+        meta: { requiresAuth: false },
     },
 ];
 

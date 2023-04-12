@@ -76,7 +76,7 @@
                 }
             },
             goToPatientDetails(patientId, belongsToStaff) {
-                alert(patientId);
+             //   alert(patientId);
                 this.$router.push({
                     name: "PatientDetails",
                     params: {

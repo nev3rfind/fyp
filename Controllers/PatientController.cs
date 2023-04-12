@@ -55,7 +55,7 @@ namespace NhsImsApp.Controllers
             }
 
             return Json(new { success = false });
-   
+
         }
 
         /// <summary>
@@ -100,6 +100,11 @@ namespace NhsImsApp.Controllers
             return Json(new { success = false });
         }
 
+        /// <summary>
+        /// Get patient procedures by patient Id
+        /// </summary>
+        /// <param name="patientId"></param>
+        /// <returns>Patient procedures list</returns>
         [HttpPost]
         public ActionResult GetPatientProceduresByPatientId(int patientId)
         {
@@ -130,6 +135,46 @@ namespace NhsImsApp.Controllers
 
             return Json(new { success = false });
 
+        }
+
+        /// <summary>
+        /// Get patient details by Id
+        /// </summary>
+        /// <param name="patientId"></param>
+        /// <returns>Patient details</returns>
+        [HttpPost]
+        public ActionResult GetPatientDetailsByPatientId(int patientId)
+        {
+            try
+            {
+                var patientDetails = _Context.Patients
+                    .Where(a => a.PatientId == patientId)
+                    .FirstOrDefault();
+
+                if (patientDetails != null)
+                {
+                    return Json(new
+                    {
+                        success = true,
+                        fullName = patientDetails.FullName,
+                        dob = patientDetails.Dob,
+                        gender = patientDetails.Gender,
+                    });
+                }
+
+                return Json(new
+                {
+                    success = false,
+                });
+            }
+            catch (Exception ex)
+            {
+                return Json(new
+                {
+                    success = false,
+                    message = ex.Message,
+                });
+            }
         }
     }
 }
