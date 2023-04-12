@@ -26,22 +26,30 @@ namespace NhsImsApp.Controllers
         /// Getting all medication
         /// </summary>
         /// <returns>A lsit of medication with medication full name</returns>
+        /// 
+        [HttpGet]
         public ActionResult GetAllMedications()
         {
-            var medications = _Context.Medications
+            var medicationsData = _Context.Medications
                 .ToList();
 
-            if (medications.Count > 0)
+            if (medicationsData.Count > 0)
             {
+                var medications = medicationsData.Select(a => new
+                {
+                    a.MedicationId,
+                    a.MedicationName,
+                }).ToList();
+
                 return Json(new
                 {
                     success = true,
                     medicationsCount = medications.Count,
                     medications = medications,
-                });
+                }, JsonRequestBehavior.AllowGet);
             }
 
-            return Json(new { success = false });
+            return Json(new { success = false }, JsonRequestBehavior.AllowGet);
         }
     }
 }

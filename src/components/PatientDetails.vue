@@ -7,9 +7,15 @@
                         <div class="card-content">
                             <div class="card-body">
                                 <div class="d-flex justify-content-between align-items-center">
-                                    <!--<h4>{{ patientDetails.fullName }}</h4>-->
-                                    <h4><i class='user-status bx bxs-user-check'></i>Patient Name</h4>
-                                    <h4><span class="badge rounded-pill bg-success">Assigned </span></h4>
+                                    <h4>
+                                        <i v-if="belongsToStaff === 'true'" class='user-status text-success bx bxs-user-check'></i>
+                                        <i v-else class='user-status text-danger bx bxs-user-x'></i>
+                                        {{ patientDetails.fullName }}
+                                    </h4>
+                                    <h4>
+                                        <span v-if="belongsToStaff === 'true'" class="badge rounded-pill bg-success">Assigned</span>
+                                        <span v-else="belongsToStaff" class="badge rounded-pill bg-danger">Only View</span>
+                                    </h4>
                                 </div>
                             </div>
                         </div>
@@ -17,7 +23,7 @@
                 </div>
             </div>
             <div class="row">
-                <div class="col-xl-6 col-sm-12 col-md-12 col-12">
+                <div v-if="belongsToStaff === 'true'" class="col-xl-6 col-sm-12 col-md-12 col-12">
                     <div class="card mb-2">
                         <div class="card-content">
                             <div class="card-body">
@@ -47,13 +53,13 @@
                                     <h5 class="me-4"><i class='bx bxs-capsule'></i> Current medication: 2</h5>
                                     <button class="btn btn-light btn-sm border confirm-btn me-4" @click="toggleAddMedication">Add <i class='bx bx-plus add-icon'></i></button>
                                 </div>
-                                <div class="d-flex align-items-center mt-3">
-                                    <span>Medication A</span>
+                                <div v-for="(medication, index) in patientMedications" :key="medication.Id" class="d-flex align-items-center mt-3">
+                                    <span>{{ medication.MedicationName }}</span>
                                     <div class="progress w-25 ms-4 me-4 medication-bar">
                                         <div class="progress-bar bg-success progress-bar-striped progress-bar-animated" role="progressbar" style="width:40%" aria-valuenow="40" aria-valuemin="0" aria-valuemax="100">
                                         </div>
                                     </div>
-                                    <span class="ms-2">7/30 day <i class='bx bx-calendar-exclamation medication-progress-icon'></i></span>
+                                    <span class="ms-2">{{ medication.Procentage }}/28 day <i class='bx bx-calendar-exclamation medication-progress-icon'></i></span>
                                 </div>
                             </div>
                         </div>
@@ -68,12 +74,11 @@
                                     <h5 class="mb-3"><i class='bx bxs-capsule'></i> <i class='bx bx-plus text-success'></i> Add new medication</h5>
                                     <div class="mb-3">
                                         <label for="medication-select" class="form-label">Medication</label>
-                                        <select class="form-select" id="medication-select" v-model="selectedMedication">
+                                        <select class="form-select border" id="medication-select" v-model="selectedMedication">
                                             <option disabled value="">Please select a medication</option>
-                                            <option v-for="medication in medications" :key="medication.id" :value="medication.id">
-                                                {{ medication.name }}
+                                            <option v-for="medication in medications" :key="medication.MedicationId" :value="medication.MedicationId">
+                                                {{ medication.MedicationName }}
                                             </option>
-                                            <option>Aspirin</option>
                                         </select>
                                         <div v-if="medicationError" class="invalid-feedback">{{ medicationError }}</div>
                                     </div>
@@ -171,19 +176,22 @@
                 patientDetails: [],
                 showAddMedication: false,
                 medications: [],
-                selectedMedication: null,
+                selectedMedication: '',
                 startDate: null,
                 endDate: null,
                 medicationError: null,
                 startDateError: null,
                 endDateError: null,
                 medicationAdded: false,
+                patientMedications: [],
             };
         },
         created() {
+            this.selectedMedication = '';
             this.fetchProcedures();
             this.fetchPatientDetails();
             this.fetchMedications();
+            this.fetchPatientMedicationList();
         },
         methods: {
             // Get patient`s procedures
@@ -224,17 +232,15 @@
             },
             async fetchMedications() {
                 try {
-                    const response = await axios.post("/api/patient/GetMedicationsByPatientId", {
-                        patientId: this.patientId,
-                    });
+                    const response = await axios.get("/api/medication/GetAllMedications");
                     if (response.data.success) {
-                        this.patientDetails = response.data;
+                        console.log(response.data);
+                        this.medications = response.data.medications;
                     } else {
                         console.log('Failed to get medication details:', response.data.message);
-
                     }
                 } catch (error) {
-                    console.error('Error fetching patient details:', error);
+                    console.error('Error fetching medication details:', error);
                 }
             },
             cancelAddMedication() {
@@ -273,6 +279,20 @@
                 this.startDate = null;
                 this.endDate = null;
             },
+            // Get medications list
+            async fetchPatientMedicationList() {
+                try {
+                    const response = await axios.post('/api/patient/GetPatientMedicationList', { patientId: this.patientId });
+
+                    if (response.data.success) {
+                        this.patientMedications = response.data.patientMedications;
+                    } else {
+                        console.log('Failed to get medications list', response.data.message);
+                    }
+                } catch (error) {
+                    console.error(error);
+                }
+            },
         }
         
     }
@@ -284,7 +304,6 @@
 
     .user-status {
         font-size: 28px;
-        color: $green;
         position: relative;
         top: 3px;
         padding-right: 10px;

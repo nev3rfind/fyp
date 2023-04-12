@@ -176,5 +176,31 @@ namespace NhsImsApp.Controllers
                 });
             }
         }
+
+        [HttpPost]
+        public ActionResult GetPatientMedicationList(int patientId)
+        {
+            var patientMedicationsData = _Context.PatientMedications
+                .Where(a => a.PatientId == patientId)
+                .Include(a => a.Medication)
+                .ToList();
+
+            if(patientMedicationsData.Count > 0)
+            {
+                var patientMedications = patientMedicationsData.Select(a => new
+                {
+                    a.Id,
+                    a.StartDate,
+                    a.EndDate,
+                    MedicationName = a.Medication.MedicationName,
+                    RemainingDays = (a.EndDate - a.StartDate)?.TotalDays,
+                    Procentage = (a.EndDate - a.StartDate)?.TotalDays / 28 * 100,
+                }).ToList();
+
+                return Json(new { success = true, patientMedications = patientMedications });
+            }
+
+            return Json(new { success = false });
+        }
     }
 }
