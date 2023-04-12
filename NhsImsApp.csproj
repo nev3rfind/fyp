@@ -131,6 +131,7 @@
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\AppointmentController.cs" />
+    <Compile Include="Controllers\MedicationController.cs" />
     <Compile Include="Controllers\PatientController.cs" />
     <Compile Include="Controllers\PrescriptionController.cs" />
     <Compile Include="Controllers\SpaController.cs" />
@@ -193,6 +194,7 @@
     <Folder Include="src\assets\images\" />
     <Folder Include="Views\Account\" />
     <Folder Include="Views\Appointment\" />
+    <Folder Include="Views\Medication\" />
     <Folder Include="Views\Patients\" />
     <Folder Include="Views\Prescription\" />
     <Folder Include="Views\Staff\" />

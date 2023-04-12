@@ -45,7 +45,7 @@
                             <div class="card-body">
                                 <div class="d-flex justify-content-between align-items-center">
                                     <h5 class="me-4"><i class='bx bxs-capsule'></i> Current medication: 2</h5>
-                                    <button class="btn btn-light btn-sm border confirm-btn me-4">Add <i class='bx bx-plus add-icon'></i></button>
+                                    <button class="btn btn-light btn-sm border confirm-btn me-4" @click="toggleAddMedication">Add <i class='bx bx-plus add-icon'></i></button>
                                 </div>
                                 <div class="d-flex align-items-center mt-3">
                                     <span>Medication A</span>
@@ -59,6 +59,46 @@
                         </div>
                     </div>
                 </div>
+                <!-- Add medication card -->
+                <transition name="fade" mode="out-in">
+                    <div class="col-xl-12 col-sm-12 col-12" v-if="showAddMedication" key="add-medication-card">
+                        <div class="card mb-2 add-medication-card">
+                            <div class="card-content">
+                                <div class="card-body" v-if="!medicationAdded">
+                                    <h5 class="mb-3"><i class='bx bxs-capsule'></i> <i class='bx bx-plus text-success'></i> Add new medication</h5>
+                                    <div class="mb-3">
+                                        <label for="medication-select" class="form-label">Medication</label>
+                                        <select class="form-select" id="medication-select" v-model="selectedMedication">
+                                            <option disabled value="">Please select a medication</option>
+                                            <option v-for="medication in medications" :key="medication.id" :value="medication.id">
+                                                {{ medication.name }}
+                                            </option>
+                                            <option>Aspirin</option>
+                                        </select>
+                                        <div v-if="medicationError" class="invalid-feedback">{{ medicationError }}</div>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="start-date" class="form-label">Start Date</label>
+                                        <input type="date" :class="{ 'is-invalid': startDateError }" class="form-control" id="start-date" v-model="startDate">
+                                        <div v-if="startDateError" class="invalid-feedback">{{ startDateError }}</div>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="end-date" class="form-label">End Date</label>
+                                        <input type="date" :class="{ 'is-invalid': endDateError }" class="form-control" id="end-date" v-model="endDate">
+                                        <div v-if="endDateError" class="invalid-feedback">{{ endDateError }}</div>
+                                    </div>
+                                    <div class="d-flex justify-content-between">
+                                        <button class="btn btn-light btn-sm border confirm-btn" @click="cancelAddMedication">Cancel</button>
+                                        <button class="btn btn-success btn-sm" @click="submitMedication">Submit</button>
+                                    </div>
+                                </div>
+                                <div class="card-body d-flex justify-content-center align-items-center" v-else>
+                                    <h5 class="text-center text-success">Medication added <i class='bx bxs-check-circle'></i></h5>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </transition>
                 <div class="col-xl-6 col-sm-12 col-md-12 col-12">
                     <div class="card mb-2">
                         <div class="card-content">
@@ -129,11 +169,21 @@
             return {
                 procedures: [],
                 patientDetails: [],
+                showAddMedication: false,
+                medications: [],
+                selectedMedication: null,
+                startDate: null,
+                endDate: null,
+                medicationError: null,
+                startDateError: null,
+                endDateError: null,
+                medicationAdded: false,
             };
         },
         created() {
             this.fetchProcedures();
             this.fetchPatientDetails();
+            this.fetchMedications();
         },
         methods: {
             // Get patient`s procedures
@@ -168,6 +218,60 @@
                 } catch (error) {
                     console.error('Error fetching patient details:', error);
                 }
+            },
+            toggleAddMedication() {
+                this.showAddMedication = !this.showAddMedication;
+            },
+            async fetchMedications() {
+                try {
+                    const response = await axios.post("/api/patient/GetMedicationsByPatientId", {
+                        patientId: this.patientId,
+                    });
+                    if (response.data.success) {
+                        this.patientDetails = response.data;
+                    } else {
+                        console.log('Failed to get medication details:', response.data.message);
+
+                    }
+                } catch (error) {
+                    console.error('Error fetching patient details:', error);
+                }
+            },
+            cancelAddMedication() {
+                this.showAddMedication = false;
+            },
+            submitMedication() {
+                this.medicationError = null;
+                this.startDateError = null;
+                this.endDateError = null;
+
+                if (!this.selectedMedication) {
+                    this.medicationError = 'Please select a medication';
+                }
+
+                if (!this.startDate) {
+                    this.startDateError = 'Please select a start date';
+                }
+
+                if (!this.endDate) {
+                    this.endDateError = 'Please select an end date';
+                }
+
+                if (!this.medicationError && !this.startDateError && !this.endDateError) {
+                    // Submit the form, save the data, etc.
+                    // After successful submission:
+                    this.medicationAdded = true;
+                    setTimeout(() => {
+                        this.medicationAdded = false;
+                        this.showAddMedication = false;
+                        this.resetForm();
+                    }, 2000);
+                }
+            },
+            resetForm() {
+                this.selectedMedication = null;
+                this.startDate = null;
+                this.endDate = null;
             },
         }
         
@@ -254,5 +358,18 @@
         text-transform:uppercase;
         text-decoration:underline;
         cursor: pointer;
+    }
+
+    .fade-enter-active, .fade-leave-active {
+        transition: opacity .5s !important;
+    }
+
+    .fade-enter, .fade-leave-to {
+        opacity: 0 !important;
+    }
+
+    .add-medication-card {
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.4)!important;
+        border: 1px solid $green!important;
     }
 </style>
