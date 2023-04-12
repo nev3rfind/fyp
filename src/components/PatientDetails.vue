@@ -26,14 +26,56 @@
                                 </div>
                                 <h6><i class='calendar-icon bx bx-calendar-check'></i> 11:30 10/03/2023</h6>
                                 <div class="row">
-                                    <div class="col-7">
+                                    <div class="col">
                                         <h6 class="fw-bold">Confirm?* <i class='app-lock bx bxs-lock-alt text-danger'></i></h6>
                                     </div>
-                                    <div class="col d-flex justify-content-between">
-                                        <button class="btn btn-light btn-sm border confirm-btn"><i class='bx bx-check text-success'></i> Yes</button>
+                                    <div class="col d-flex">
+                                        <button class="btn btn-light btn-sm border confirm-btn me-4"><i class='bx bx-check text-success'></i> Yes</button>
                                         <button class="btn btn-light btn-sm border confirm-btn"><i class='bx bx-x text-danger'></i> No</button>
                                     </div>
                                     <span class="app-note text-muted mt-2">*Available to confirm during/after appointment</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xl-6 col-sm-12 col-md-12 col-12">
+                    <div class="card mb-2">
+                        <div class="card-content">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <h5 class="me-4"><i class='bx bxs-capsule'></i> Current medication: 2</h5>
+                                    <button class="btn btn-light btn-sm border confirm-btn me-4">Add <i class='bx bx-plus add-icon'></i></button>
+                                </div>
+                                <div class="d-flex align-items-center mt-3">
+                                    <span>Medication A</span>
+                                    <div class="progress w-25 ms-4 me-4 medication-bar">
+                                        <div class="progress-bar bg-success progress-bar-striped progress-bar-animated" role="progressbar" style="width:40%" aria-valuenow="40" aria-valuemin="0" aria-valuemax="100">
+                                        </div>
+                                    </div>
+                                    <span class="ms-2">7/30 day <i class='bx bx-calendar-exclamation medication-progress-icon'></i></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xl-6 col-sm-12 col-md-12 col-12">
+                    <div class="card mb-2">
+                        <div class="card-content">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <h5 class="me-4"><i class='bx bx-injection'></i> Procedures: 2</h5>
+                                    <button class="btn btn-light btn-sm border confirm-btn me-4">Add <i class='bx bx-plus add-icon'></i></button>
+                                </div>
+                                <div class="row d-flex align-items-center mt-3">
+                                    <div class="col-4"><span>Medication A</span></div>
+                                    <div class="col-5"> <span class="badge rounded-pill bg-success procedure-badge border">Completed on 15/02/23 </span></div>
+                                    <div class="col-3"><span class="procedure-link">View more</span></div>
+                                </div>
+                                <div class="row d-flex align-items-center mt-3">
+                                    <div class="col-4"><span>Medication A</span></div>
+                                    <div class="col-5"> <span class="badge rounded-pill bg-warning procedure-badge border">Scheduled on 15/02/23 </span></div>
+                                    <div class="col-3"><span class="procedure-link">View more</span></div>
                                 </div>
                             </div>
                         </div>
@@ -146,4 +188,42 @@
         font-size: 14px;
     }
 
+    h5 i {
+        font-size: 24px;
+        color: $main-blue;
+        position: relative;
+        top: 3px;
+    }
+
+    .add-icon {
+        font-size: 22px;
+        color: $main-blue;
+    }
+
+    .btn-add {
+        background: red;
+    }
+
+    .medication-bar {
+        height: 10px!important;
+    }
+
+    .medication-progress-icon {
+        font-size: 20px;
+        position: relative;
+        top: 3px;
+        color: $orange;
+    }
+
+    .procedure-badge {
+        font-size: 12px!important;
+    }
+
+    .procedure-link {
+        font-size: 12px;
+        color: $main-blue;
+        text-transform:uppercase;
+        text-decoration:underline;
+        cursor: pointer;
+    }
 </style>
