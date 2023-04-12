@@ -69,13 +69,37 @@
                                 </div>
                                 <div class="row d-flex align-items-center mt-3">
                                     <div class="col-4"><span>Medication A</span></div>
-                                    <div class="col-5"> <span class="badge rounded-pill bg-success procedure-badge border">Completed on 15/02/23 </span></div>
+                                    <div class="col-5"> <span class="w-100 badge rounded-pill bg-success procedure-badge border">Completed on 15/02/23 </span></div>
                                     <div class="col-3"><span class="procedure-link">View more</span></div>
                                 </div>
                                 <div class="row d-flex align-items-center mt-3">
                                     <div class="col-4"><span>Medication A</span></div>
-                                    <div class="col-5"> <span class="badge rounded-pill bg-warning procedure-badge border">Scheduled on 15/02/23 </span></div>
+                                    <div class="col-5"> <span class="w-100 badge rounded-pill bg-warning procedure-badge border">Scheduled on 15/02/23 </span></div>
                                     <div class="col-3"><span class="procedure-link">View more</span></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xl-6 col-sm-12 col-md-12 col-12">
+                    <div class="card mb-2">
+                        <div class="card-content">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <h5 class="me-4"><i class='bx bx-clipboard'></i> Examination records: 4</h5>
+                                </div>
+                                <div class="row d-flex align-items-center mt-3">
+                                    <div class="col-4"><span>15 Feb 2023</span></div>
+                                    <div class="col-5"> <span class="w-100 badge rounded-pill bg-light examination-badge border">Check general</span></div>
+                                    <div class="col-3"><span class="procedure-link">View more</span></div>
+                                </div>
+                                <div class="row d-flex align-items-center mt-3">
+                                    <div class="col-4"><span>16 Mar 2023</span></div>
+                                    <div class="col-5"> <span class="w-100 badge rounded-pill bg-light examination-badge border">Check </span></div>
+                                    <div class="col-3"><span class="procedure-link">View more</span></div>
+                                </div>
+                                <div class="text-center mt-3">
+                                    <button class="w-75 btn btn-light btn-sm rounded-pill border confirm-btn">Add new examination record now <i class='bx bx-plus add-icon'></i></button>
                                 </div>
                             </div>
                         </div>
@@ -217,6 +241,11 @@
 
     .procedure-badge {
         font-size: 12px!important;
+    }
+
+    .examination-badge {
+        font-size: 12px !important;
+        color: $neutral-black!important;
     }
 
     .procedure-link {
