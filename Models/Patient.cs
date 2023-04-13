@@ -19,4 +19,13 @@ namespace NhsImsApp.Models
         public virtual ICollection<StaffPatient> StaffPatients { get; set; }
         public virtual ICollection<Staff> Staffs { get; set; }
     }
+
+    public class PatientMedicationInputModel
+    {
+        public int PatientId { get; set; }
+        public int MedicationId { get; set; }
+        public int StaffId { get; set; }
+        public DateTime StartDate { get; set; }
+        public DateTime EndDate { get; set; }
+    }
 }

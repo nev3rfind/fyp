@@ -131,6 +131,7 @@
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\AppointmentController.cs" />
+    <Compile Include="Controllers\MedicationController.cs" />
     <Compile Include="Controllers\PatientController.cs" />
     <Compile Include="Controllers\PrescriptionController.cs" />
     <Compile Include="Controllers\SpaController.cs" />
@@ -146,6 +147,10 @@
     <Compile Include="Migrations\202304031557020_AddLastLoginAndLastAuthenticatedToStaffs.cs" />
     <Compile Include="Migrations\202304031557020_AddLastLoginAndLastAuthenticatedToStaffs.designer.cs">
       <DependentUpon>202304031557020_AddLastLoginAndLastAuthenticatedToStaffs.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202304131256040_AddPatientProcedureColumns.cs" />
+    <Compile Include="Migrations\202304131256040_AddPatientProcedureColumns.designer.cs">
+      <DependentUpon>202304131256040_AddPatientProcedureColumns.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\Appointment.cs" />
@@ -193,6 +198,7 @@
     <Folder Include="src\assets\images\" />
     <Folder Include="Views\Account\" />
     <Folder Include="Views\Appointment\" />
+    <Folder Include="Views\Medication\" />
     <Folder Include="Views\Patients\" />
     <Folder Include="Views\Prescription\" />
     <Folder Include="Views\Staff\" />
@@ -208,6 +214,7 @@
     <Content Include="src\components\App.vue" />
     <Content Include="src\components\NotFound.vue" />
     <Content Include="src\components\PatientSearch.vue" />
+    <Content Include="src\components\PatientDetails.vue" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Migrations\202303291059045_InitialCreate.resx">
@@ -215,6 +222,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202304031557020_AddLastLoginAndLastAuthenticatedToStaffs.resx">
       <DependentUpon>202304031557020_AddLastLoginAndLastAuthenticatedToStaffs.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202304131256040_AddPatientProcedureColumns.resx">
+      <DependentUpon>202304131256040_AddPatientProcedureColumns.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

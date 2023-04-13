@@ -13,7 +13,10 @@
                         </div>
                         <ul id="patientsResults" v-if="searchBar.length >= 3">
                             <li v-if="!patientsResults || patientsResults.length === 0">No matching patients</li>
-                            <li v-else v-for="(patient, index) in patientsResults" :key="patient.patientId">
+                            <li v-else v-for="(patient, index) in patientsResults" 
+                                :key="patient.PatientId"
+                                @click="goToPatientDetails(patient.PatientId, patient.belongsToStaff)"
+                                >
                                 {{ patient.fullName }}
                                 <i
                                    v-if="patient.belongsToStaff"
@@ -72,6 +75,16 @@
                     this.patientsResults = [];
                 }
             },
+            goToPatientDetails(patientId, belongsToStaff) {
+             //   alert(patientId);
+                this.$router.push({
+                    name: "PatientDetails",
+                    params: {
+                        patientId: patientId,
+                        belongsToStaff: belongsToStaff,
+                    },
+                });
+            },
         },
     }
 
@@ -89,8 +102,10 @@
     }
 
     .title-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
         width: 100%;
-        max-width: 400px;
 
         h1 {
             margin-bottom: 30px;
@@ -102,6 +117,7 @@
     }
 
     .search-bar input {
+        width: 100%;
         border-radius: 2px;
         border: 2px solid $main-blue;
         font-family: Nunito;
@@ -110,6 +126,8 @@
         background-color: $neutral-grey-pale;
         outline: 0;
         padding: .45rem .9rem .45rem 2.4rem;
+        min-width: 300px;
+        max-width: 500px;
     }
 
     .search-bar input:focus {
@@ -137,16 +155,17 @@
         list-style: none;
         position: relative;
         border: 1px solid $neutral-black;
-        border-bottom: none;
         overflow-y: auto;
         overflow-x: hidden;
         display: block;
         max-height: 200px;
-        // margin: 0 0.5em;
+        width: 100%;
         padding: 0;
         border-radius: 1px;
         margin: auto;
         margin-top: 2px;
+        min-width: 300px;
+        max-width: 500px;
 
         &:empty {
             display: none;
@@ -173,6 +192,10 @@
             .label {
                 color: $nav-text;
             }
+        }
+
+        li:last-child {
+            border-bottom: none;
         }
 
         li:hover {

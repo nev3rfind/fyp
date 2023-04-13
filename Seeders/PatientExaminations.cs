@@ -22,7 +22,7 @@ namespace NhsImsApp.Seeders
                     .RuleFor(pe => pe.ExaminationDate, f => f.Date.Between(DateTime.Now.AddYears(-4), DateTime.Now))
                     .RuleFor(pe => pe.Analysis, f => f.Random.MedicalAnalysis());
 
-                var patientExaminations = patientExaminationsFaker.Generate(100);
+                var patientExaminations = patientExaminationsFaker.Generate(400);
                 context.PatientExaminations.AddRange(patientExaminations);
                 context.SaveChanges();
             }

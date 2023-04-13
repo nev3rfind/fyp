@@ -3,6 +3,7 @@ import HomePage from '../components/HomePage';
 import LoginPage from '../components/LoginPage';
 import NotFound from '../components/NotFound';
 import PatientSearch from '../components/PatientSearch';
+import PatientDetails from '../components/PatientDetails';
 import store from "./store";
 
 const routes = [
@@ -27,6 +28,13 @@ const routes = [
         path: '/search',
         name: 'Search',
         component: PatientSearch,
+        meta: { requiresAuth: true },
+    },
+    {
+        path: "/patient-details/:patientId/:belongsToStaff",
+        name: "PatientDetails",
+        component: PatientDetails,
+        props: true,
         meta: { requiresAuth: true },
     },
 ];
