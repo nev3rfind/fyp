@@ -249,7 +249,7 @@ namespace NhsImsApp.Controllers
         public ActionResult GetPatientProcedureList(int patientId)
         {
 
-            var patientProceduresData = _Context.PatientProcedures
+            var patientProceduresData = _Context.PatientProcedures 
                 .Where(a => a.PatientId == patientId)
                 .Include(a => a.Procedure)
                 .ToList();
@@ -275,6 +275,40 @@ namespace NhsImsApp.Controllers
             return Json(new { success = true, procedureCount = 0 });
         }
 
+        /// <summary>
+        /// Gets a list of examinations
+        /// </summary>
+        /// <param name="patientId"></param>
+        /// <returns>Examinations list</returns>
+        [HttpPost]
+        public ActionResult GetPatientExaminationList(int patientId)
+        {
+
+            var patientExaminationsData = _Context.PatientExaminations
+                .Where(a => a.PatientId == patientId)
+                .Include(a => a.Examination)
+                .ToList();
+
+            if (patientExaminationsData.Count > 0)
+            {
+                var patientExaminations = patientExaminationsData.Select(a => new
+                {
+                    a.Id,
+                    a.ExaminationDate,
+                    a.Analysis,
+                    ExaminationType = a.Examination.ExaminationType,
+                }).ToList();
+
+                return Json(new
+                {
+                    success = true,
+                    patientExamination = patientExaminations,
+                    examinationCount = patientExaminationsData.Count(),
+                });
+            }
+
+            return Json(new { success = true, examinationCount = 0 });
+        }
 
     }
 }
