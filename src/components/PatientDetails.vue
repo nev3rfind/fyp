@@ -23,24 +23,27 @@
                 </div>
             </div>
             <div class="row">
-                <div v-if="belongsToStaff === 'true'" class="col-xl-6 col-sm-12 col-md-12 col-12">
+                <div class="col-xl-6 col-sm-12 col-md-12 col-12">
                     <div class="card mb-2">
                         <div class="card-content">
                             <div class="card-body">
                                 <div class="d-flex justify-content-between align-items-center">
                                     <h5 class="me-4">Upcoming appointment:</h5>
                                 </div>
-                                <h6><i class='calendar-icon bx bx-calendar-check'></i> 11:30 10/03/2023</h6>
-                                <div class="row">
-                                    <div class="col">
-                                        <h6 class="fw-bold">Confirm?* <i class='app-lock bx bxs-lock-alt text-danger'></i></h6>
+                                <div v-if="appointmentStatus == 1">
+                                    <h6><i class='calendar-icon bx bx-calendar-check'></i>{{ formatAppDate(appointmentData.AppointmentDate) }}</h6>
+                                    <div class="row">
+                                        <div class="col">
+                                            <h6 class="fw-bold">Confirm?* <i class='app-lock bx bxs-lock-alt text-danger'></i></h6>
+                                        </div>
+                                        <div class="col d-flex">
+                                            <button class="btn btn-light btn-sm border confirm-btn me-4" :disabled="belongsToStaff !== 'true'"><i class='bx bx-check text-success'></i> Yes</button>
+                                            <button class="btn btn-light btn-sm border confirm-btn" :disabled="belongsToStaff !== 'true'"><i class='bx bx-x text-danger'></i> No</button>
+                                        </div>
+                                        <span class="app-note text-muted mt-2">*Available to confirm during/after appointment</span>
                                     </div>
-                                    <div class="col d-flex">
-                                        <button class="btn btn-light btn-sm border confirm-btn me-4"><i class='bx bx-check text-success'></i> Yes</button>
-                                        <button class="btn btn-light btn-sm border confirm-btn"><i class='bx bx-x text-danger'></i> No</button>
-                                    </div>
-                                    <span class="app-note text-muted mt-2">*Available to confirm during/after appointment</span>
                                 </div>
+                                <span v-else class="text-muted">No upcoming appointments found</span>
                             </div>
                         </div>
                     </div>
@@ -193,6 +196,8 @@
                 procedureCount: null,
                 patientExaminations: [],
                 examinationCount: null,
+                appointmentData: [],
+                appointmentStatus: null,
             };
         },
         created() {
@@ -203,6 +208,7 @@
             this.fetchPatientMedicationList();
             this.fetchPatientProcedureList();
             this.fetchPatientExaminationList();
+            this.fetchUpcomingAppointment();
         },
         methods: {
             // Format date
@@ -212,6 +218,10 @@
             // Format examination date
             formatExamDate(date) {
                 return moment(date).format("Do MMM YYYY");
+            },
+            // Format appoinment date
+            formatAppDate(date) {
+                return moment(date).format("HH:MM Do MMM YYYY");
             },
             // Get patient`s procedures
             async fetchProcedures() {
@@ -349,11 +359,28 @@
                 try {
                     const response = await axios.post('/api/patient/GetPatientExaminationList', { patientId: this.patientId });
                     if (response.data.success) {
-                        console.log(response.data);
                         this.patientExaminations = response.data.patientExamination;
                         this.examinationCount = response.data.examinationCount;
                     } else {
                         console.log('Failed to get examination list', response.data.message);
+                    }
+                } catch (error) {
+                    console.error(error);
+                }
+            },
+            // Get the most closest appoinment
+            async fetchUpcomingAppointment() {
+                try {
+                    const response = await axios.post('/api/patient/GetUpcomingAppointmentByPatientId', {
+                        patientId: this.patientId,
+                        staffId: this.staffId,
+                    });
+                    if (response.data.success) {
+                        console.log(response.data);
+                        this.appointmentData = response.data.appointment;
+                        this.appointmentStatus = response.data.appointmentStatus;
+                    } else {
+                        console.log('Failed to get appointment details', response.data.message);
                     }
                 } catch (error) {
                     console.error(error);

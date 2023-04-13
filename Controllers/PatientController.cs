@@ -310,5 +310,39 @@ namespace NhsImsApp.Controllers
             return Json(new { success = true, examinationCount = 0 });
         }
 
+        /// <summary>
+        /// Get the closest appointment
+        /// </summary>
+        /// <param name="staffId"></param>
+        /// <param name="patientId"></param>
+        /// <returns>Closest appointments details</returns>
+        [HttpPost]
+        public ActionResult GetUpcomingAppointmentByPatientId(int staffId, int patientId)
+        {
+            DateTime currentDate = DateTime.Now;
+
+            var closestAppointment = _Context.Appointments
+                .Where(a => a.PatientId == patientId && a.StaffId == staffId && a.AppointmentDate > currentDate)
+                .Include(a => a.Patient)
+                .Include(a => a.Staff)
+                .OrderBy(a => a.AppointmentDate)
+                .FirstOrDefault();
+
+            if (closestAppointment != null)
+            {
+                var appointmentData = new
+                {
+                    closestAppointment.AppointmentId,
+                    AppointmentDate = closestAppointment.AppointmentDate,
+                    Status = closestAppointment.Status,
+                    AttendanceConfirmed = closestAppointment.AttendanceConfirmed,
+                };
+
+                return Json(new { success = true, appointment = appointmentData, appointmentStatus = 1 });
+            }
+
+            return Json(new { succeess = true, appointmentStatus = 0 });
+        }
+
     }
 }
