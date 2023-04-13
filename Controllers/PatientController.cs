@@ -180,12 +180,15 @@ namespace NhsImsApp.Controllers
         [HttpPost]
         public ActionResult GetPatientMedicationList(int patientId)
         {
+            DateTime currentDate = DateTime.Now;
+            DateTime oneMonthFromNow = currentDate.AddMonths(1);
+
             var patientMedicationsData = _Context.PatientMedications
-                .Where(a => a.PatientId == patientId)
+                .Where(a => a.PatientId == patientId && a.EndDate <= oneMonthFromNow)
                 .Include(a => a.Medication)
                 .ToList();
 
-            if(patientMedicationsData.Count > 0)
+            if (patientMedicationsData.Count > 0)
             {
                 var patientMedications = patientMedicationsData.Select(a => new
                 {
@@ -193,14 +196,20 @@ namespace NhsImsApp.Controllers
                     a.StartDate,
                     a.EndDate,
                     MedicationName = a.Medication.MedicationName,
-                    RemainingDays = (a.EndDate - a.StartDate)?.TotalDays,
-                    Procentage = (a.EndDate - a.StartDate)?.TotalDays / 28 * 100,
+                    RemainingDays = Math.Round((a.EndDate.Value - DateTime.Today).TotalDays),
+                    Procentage = 100 - (Math.Round((a.EndDate.Value - DateTime.Today).TotalDays / DateTime.DaysInMonth(a.EndDate.Value.Year, a.EndDate.Value.Month) * 100)),
+                    DaysInMonth = DateTime.DaysInMonth(a.EndDate.Value.Year, a.EndDate.Value.Month),
                 }).ToList();
 
-                return Json(new { success = true, patientMedications = patientMedications });
+                return Json(new
+                {
+                    success = true, 
+                    patientMedications = patientMedications,
+                    medicationCount = patientMedicationsData.Count(),
+                });
             }
 
-            return Json(new { success = false });
+            return Json(new { success = true, medicationCount = 0 });
         }
     }
 }

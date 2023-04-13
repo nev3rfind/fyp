@@ -50,17 +50,21 @@
                         <div class="card-content">
                             <div class="card-body">
                                 <div class="d-flex justify-content-between align-items-center">
-                                    <h5 class="me-4"><i class='bx bxs-capsule'></i> Current medication: 2</h5>
+                                    <h5 class="me-4"><i class='bx bxs-capsule'></i> Current medication: {{ medicationCount }}</h5>
                                     <button class="btn btn-light btn-sm border confirm-btn me-4" @click="toggleAddMedication">Add <i class='bx bx-plus add-icon'></i></button>
                                 </div>
-                                <div v-for="(medication, index) in patientMedications" :key="medication.Id" class="d-flex align-items-center mt-3">
+                                <div v-if="medicationCount !== 0" v-for="(medication, index) in patientMedications" :key="medication.Id" class="d-flex align-items-center mt-3">
                                     <span>{{ medication.MedicationName }}</span>
                                     <div class="progress w-25 ms-4 me-4 medication-bar">
-                                        <div class="progress-bar bg-success progress-bar-striped progress-bar-animated" role="progressbar" style="width:40%" aria-valuenow="40" aria-valuemin="0" aria-valuemax="100">
+                                        <div v-if="medication.Procentage < 100" class="progress-bar bg-warning progress-bar-striped progress-bar-animated" role="progressbar" :style="'width: ' + medication.Procentage + '%'" aria-valuenow="{{ medication.Procentage }}" aria-valuemin="0" aria-valuemax="100">
+                                        </div>
+                                        <div v-else class="progress-bar bg-success progress-bar-striped progress-bar-animated" role="progressbar" :style="'width: ' + medication.Procentage + '%'" aria-valuenow="{{ medication.Procentage }}" aria-valuemin="0" aria-valuemax="100">
                                         </div>
                                     </div>
-                                    <span class="ms-2">{{ medication.Procentage }}/28 day <i class='bx bx-calendar-exclamation medication-progress-icon'></i></span>
+                                    <span v-if="medication.Procentage < 100" class="ms-2">{{ medication.RemainingDays }}/ {{ medication.DaysInMonth }} day <i class='bx bx-calendar-exclamation medication-progress-icon'></i></span>
+                                    <span v-else class="ms-2">Exp. {{ medication.RemainingDays }} days ago <i class='bx bx-calendar-exclamation medication-progress-icon'></i></span>
                                 </div>
+                                <span v-else class="text-muted">No current medications found for this patient</span>
                             </div>
                         </div>
                     </div>
@@ -184,6 +188,7 @@
                 endDateError: null,
                 medicationAdded: false,
                 patientMedications: [],
+                medicationCount: null,
             };
         },
         created() {
@@ -286,6 +291,7 @@
 
                     if (response.data.success) {
                         this.patientMedications = response.data.patientMedications;
+                        this.medicationCount = response.data.medicationCount;
                     } else {
                         console.log('Failed to get medications list', response.data.message);
                     }
