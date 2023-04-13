@@ -51,7 +51,7 @@
                             <div class="card-body">
                                 <div class="d-flex justify-content-between align-items-center">
                                     <h5 class="me-4"><i class='bx bxs-capsule'></i> Current medication: {{ medicationCount }}</h5>
-                                    <button class="btn btn-light btn-sm border confirm-btn me-4" @click="toggleAddMedication">Add <i class='bx bx-plus add-icon'></i></button>
+                                    <button class="btn btn-light btn-sm border confirm-btn me-4" @click="toggleAddMedication" :disabled="belongsToStaff !== 'true'">Add <i class='bx bx-plus add-icon'></i></button>
                                 </div>
                                 <div v-if="medicationCount !== 0" v-for="(medication, index) in patientMedications" :key="medication.Id" class="d-flex align-items-center mt-3">
                                     <span>{{ medication.MedicationName }}</span>
@@ -61,7 +61,7 @@
                                         <div v-else class="progress-bar bg-success progress-bar-striped progress-bar-animated" role="progressbar" :style="'width: ' + medication.Procentage + '%'" aria-valuenow="{{ medication.Procentage }}" aria-valuemin="0" aria-valuemax="100">
                                         </div>
                                     </div>
-                                    <span v-if="medication.Procentage < 100" class="ms-2">{{ medication.RemainingDays }}/ {{ medication.DaysInMonth }} day <i class='bx bx-calendar-exclamation medication-progress-icon'></i></span>
+                                    <span v-if="medication.Procentage < 100" class="ms-2">{{ medication.RemainingDays }}/{{ medication.DaysInMonth }} day <i class='bx bx-calendar-exclamation medication-progress-icon'></i></span>
                                     <span v-else class="ms-2">Exp. {{ medication.RemainingDays }} days ago <i class='bx bx-calendar-exclamation medication-progress-icon'></i></span>
                                 </div>
                                 <span v-else class="text-muted">No current medications found for this patient</span>
@@ -108,24 +108,25 @@
                         </div>
                     </div>
                 </transition>
+                <!-- Procedures card -->
                 <div class="col-xl-6 col-sm-12 col-md-12 col-12">
                     <div class="card mb-2">
                         <div class="card-content">
                             <div class="card-body">
                                 <div class="d-flex justify-content-between align-items-center">
-                                    <h5 class="me-4"><i class='bx bx-injection'></i> Procedures: 2</h5>
-                                    <button class="btn btn-light btn-sm border confirm-btn me-4">Add <i class='bx bx-plus add-icon'></i></button>
+                                    <h5 class="me-4"><i class='bx bx-injection'></i> Procedures: {{ procedureCount }}</h5>
+                                    <button class="btn btn-light btn-sm border confirm-btn me-4" :disabled="belongsToStaff !== 'true'">Add <i class='bx bx-plus add-icon'></i></button>
                                 </div>
-                                <div class="row d-flex align-items-center mt-3">
-                                    <div class="col-4"><span>Medication A</span></div>
-                                    <div class="col-5"> <span class="w-100 badge rounded-pill bg-success procedure-badge border">Completed on 15/02/23 </span></div>
+                                <div v-if="procedureCount !== 0" v-for="(procedure, index) in patientProcedures" :key="procedure.Id" class="row d-flex align-items-center mt-3">
+                                    <div class="col-4"><span>{{ procedure.ProcedureName }}</span></div>
+                                    <div class="col-5">
+                                        <span v-if="procedure.Status === 'Completed'" class="w-100 badge rounded-pill bg-success procedure-badge border">Completed on {{ formatDate(procedure.ActionDate) }} </span>
+                                        <span v-if="procedure.Status === 'Scheduled'" class="w-100 badge rounded-pill bg-success procedure-badge border">Scheduled on {{ formatDate(procedure.ActionDate) }} </span>
+                                        <span v-else class="w-100 badge rounded-pill bg-success procedure-badge border">Cancelled on {{ procedure.ActionDate }} </span>
+                                    </div>
                                     <div class="col-3"><span class="procedure-link">View more</span></div>
                                 </div>
-                                <div class="row d-flex align-items-center mt-3">
-                                    <div class="col-4"><span>Medication A</span></div>
-                                    <div class="col-5"> <span class="w-100 badge rounded-pill bg-warning procedure-badge border">Scheduled on 15/02/23 </span></div>
-                                    <div class="col-3"><span class="procedure-link">View more</span></div>
-                                </div>
+                                <span v-else class="text-muted">No procedures found for this patient</span>
                             </div>
                         </div>
                     </div>
@@ -161,7 +162,7 @@
 
 <script>
     import axios from "axios";
-
+    import moment from 'moment';
     export default {
         name: "PatientDetails",
         props: {
@@ -175,7 +176,9 @@
             },
         },
         data() {
+            const staffId = this.$store.state.user ? this.$store.state.user.staffId : null;
             return {
+                staffId: staffId,
                 procedures: [],
                 patientDetails: [],
                 showAddMedication: false,
@@ -189,6 +192,8 @@
                 medicationAdded: false,
                 patientMedications: [],
                 medicationCount: null,
+                patientProcedures: [],
+                procedureCount: null,
             };
         },
         created() {
@@ -197,8 +202,13 @@
             this.fetchPatientDetails();
             this.fetchMedications();
             this.fetchPatientMedicationList();
+            this.fetchPatientProcedureList();
         },
         methods: {
+            // Format date
+            formatDate(date) {
+                return moment(date).format("DD/MM/YYYY");
+            },
             // Get patient`s procedures
             async fetchProcedures() {
                 try {
@@ -251,7 +261,8 @@
             cancelAddMedication() {
                 this.showAddMedication = false;
             },
-            submitMedication() {
+            // Add new medication record
+            async submitMedication() {
                 this.medicationError = null;
                 this.startDateError = null;
                 this.endDateError = null;
@@ -270,13 +281,29 @@
 
                 if (!this.medicationError && !this.startDateError && !this.endDateError) {
                     // Submit the form, save the data, etc.
-                    // After successful submission:
-                    this.medicationAdded = true;
-                    setTimeout(() => {
-                        this.medicationAdded = false;
-                        this.showAddMedication = false;
-                        this.resetForm();
-                    }, 2000);
+                    try {
+                        const response = await axios.post('/api/patient/AddPatientMedicationRecord', {
+                            patientId: this.patientId,
+                            medicationId: this.selectedMedication,
+                            staffId: this.staffId,
+                            startDate: this.startDate,
+                            endDate: this.endDate,
+                        });
+
+                        if (response.data.success) {
+                            this.fetchPatientMedicationList();
+                            this.medicationAdded = true;
+                            setTimeout(() => {
+                                this.medicationAdded = false;
+                                this.showAddMedication = false;
+                                this.resetForm();
+                            }, 2000);
+                        } else {
+                            console.log('Error adding medication record');
+                        }
+                    } catch (error) {
+                        console.error(error);
+                    }
                 }
             },
             resetForm() {
@@ -294,6 +321,20 @@
                         this.medicationCount = response.data.medicationCount;
                     } else {
                         console.log('Failed to get medications list', response.data.message);
+                    }
+                } catch (error) {
+                    console.error(error);
+                }
+            },
+            // Get procedures list
+            async fetchPatientProcedureList() {
+                try {
+                    const response = await axios.post('/api/patient/GetPatientProcedureList', { patientId: this.patientId });
+                    if (response.data.success) {
+                        this.patientProcedures = response.data.patientProcedures;
+                        this.procedureCount = response.data.procedureCount;
+                    } else {
+                        console.log('Failed to get procedure list', response.data.message);
                     }
                 } catch (error) {
                     console.error(error);

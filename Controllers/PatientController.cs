@@ -196,7 +196,7 @@ namespace NhsImsApp.Controllers
                     a.StartDate,
                     a.EndDate,
                     MedicationName = a.Medication.MedicationName,
-                    RemainingDays = Math.Round((a.EndDate.Value - DateTime.Today).TotalDays),
+                    RemainingDays = DateTime.DaysInMonth(a.EndDate.Value.Year, a.EndDate.Value.Month) - Math.Round((a.EndDate.Value - DateTime.Today).TotalDays),
                     Procentage = 100 - (Math.Round((a.EndDate.Value - DateTime.Today).TotalDays / DateTime.DaysInMonth(a.EndDate.Value.Year, a.EndDate.Value.Month) * 100)),
                     DaysInMonth = DateTime.DaysInMonth(a.EndDate.Value.Year, a.EndDate.Value.Month),
                 }).ToList();
@@ -211,5 +211,70 @@ namespace NhsImsApp.Controllers
 
             return Json(new { success = true, medicationCount = 0 });
         }
+
+        /// <summary>
+        /// Adds new patient medication records
+        /// </summary>
+        /// <param name="inputModel"></param>
+        /// <returns>True status if it was successfully added</returns>
+        [HttpPost]
+        public ActionResult AddPatientMedicationRecord(PatientMedicationInputModel inputModel)
+        {
+            // Create a new PatientMedication instance
+            var newPatientMedication = new PatientMedication
+            {
+                PatientId = inputModel.PatientId,
+                MedicationId = inputModel.MedicationId,
+                StaffId = inputModel.StaffId,
+                StartDate = inputModel.StartDate,
+                EndDate = inputModel.EndDate,
+                PrescriptionDate = DateTime.Now,
+                IsRenewed = false,
+            };
+
+            // Add new record to the database
+            _Context.PatientMedications.Add(newPatientMedication);
+
+            _Context.SaveChanges();
+
+            return Json(new { success = true });
+        }
+
+        /// <summary>
+        /// Get patient procedures history
+        /// </summary>
+        /// <param name="patientId"></param>
+        /// <returns>Procedure list and count</returns>
+        [HttpPost]
+        public ActionResult GetPatientProcedureList(int patientId)
+        {
+
+            var patientProceduresData = _Context.PatientProcedures
+                .Where(a => a.PatientId == patientId)
+                .Include(a => a.Procedure)
+                .ToList();
+
+            if (patientProceduresData.Count > 0)
+            {
+                var patientProcedures = patientProceduresData.Select(a => new
+                {
+                    a.Id,
+                    a.ActionDate,
+                    a.Status,
+                    ProcedureName = a.Procedure.ProcedureName,
+                }).ToList();
+
+                return Json(new
+                {
+                    success = true,
+                    patientProcedures = patientProcedures,
+                    procedureCount = patientProceduresData.Count(),
+                });
+            }
+
+            return Json(new { success = true, procedureCount = 0 });
+        }
+
+
     }
 }

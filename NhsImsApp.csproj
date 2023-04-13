@@ -148,6 +148,10 @@
     <Compile Include="Migrations\202304031557020_AddLastLoginAndLastAuthenticatedToStaffs.designer.cs">
       <DependentUpon>202304031557020_AddLastLoginAndLastAuthenticatedToStaffs.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202304131256040_AddPatientProcedureColumns.cs" />
+    <Compile Include="Migrations\202304131256040_AddPatientProcedureColumns.designer.cs">
+      <DependentUpon>202304131256040_AddPatientProcedureColumns.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\Appointment.cs" />
     <Compile Include="Models\Examination.cs" />
@@ -218,6 +222,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202304031557020_AddLastLoginAndLastAuthenticatedToStaffs.resx">
       <DependentUpon>202304031557020_AddLastLoginAndLastAuthenticatedToStaffs.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202304131256040_AddPatientProcedureColumns.resx">
+      <DependentUpon>202304131256040_AddPatientProcedureColumns.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>
