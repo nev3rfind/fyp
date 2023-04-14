@@ -20,7 +20,11 @@ namespace NhsImsApp.Controllers
             _Context = new ApplicationDbContext();
         }
 
-
+        /// <summary>
+        /// Getting prescription details by staffId
+        /// </summary>
+        /// <param name="StaffId"></param>
+        /// <returns>Pending prescriptions</returns>
         [HttpPost]
         public ActionResult GetPatientsPrescriptionByStaffId(int StaffId)
         {
@@ -50,8 +54,43 @@ namespace NhsImsApp.Controllers
             {
                 success = false
             });
-
-            
         }
+
+        /// <summary>
+        /// Getting active and expired prescription count
+        /// </summary>
+        /// <param name="staffId"></param>
+        /// <returns>Active and expired prescription count</returns>
+        [HttpPost]
+        public ActionResult GetPrescriptionSummary(int staffId)
+        {
+            var currentDate = DateTime.Now;
+
+            var medicationSummary = _Context.PatientMedications
+                .Where(pm => pm.StaffId == staffId)
+                .ToList();
+
+            if (medicationSummary.Any())
+            {
+                var prescriptionSummary = new
+                {
+                    ActivePrescriptions = medicationSummary.Count(pm => pm.StartDate <= currentDate && pm.EndDate >= currentDate),
+                    ExpiredPrescriptions = medicationSummary.Count(pm => pm.EndDate < currentDate),
+                };
+
+                return Json(new
+                {
+                    prescriptionSummary = prescriptionSummary,
+                    success = true
+                });
+            }
+
+            return Json(new
+            {
+                prescriptionSummary = 0,
+                success = true
+            });
+        }
+
     }
 } 

@@ -8,7 +8,7 @@
                             <div class="card-body">
                                 <div class="text-center">
                                     <h5 class="">Active Prescriptions</h5>
-                                    <h2 class="text-success">94</h2>
+                                    <h2 class="text-success">{{ prescriptionSummary.ActivePrescriptions }}</h2>
                                     <span class="badge rounded-pill badge-show">Click to show <i class='bx bx-show'></i></span>
                                 </div>
                             </div>
@@ -21,7 +21,7 @@
                             <div class="card-body">
                                 <div class="text-center">
                                     <h5 class="">Expired Prescriptions</h5>
-                                    <h2 class="text-danger">11</h2>
+                                    <h2 class="text-danger">{{ prescriptionSummary.ExpiredPrescriptions }}</h2>
                                     <span class="badge rounded-pill badge-show">Click to show <i class='bx bx-show'></i></span>
                                 </div>
                             </div>
@@ -132,13 +132,21 @@
 
 <script>
     import Collapse from 'bootstrap/js/src/collapse';
+    import axios from "axios";
+    import moment from 'moment';
 
     export default {
         data() {
+            const staffId = this.$store.state.user ? this.$store.state.user.staffId : null;
             return {
+                staffId: staffId,
                 isAccordionOpen: false,
                 accordionCollapse: null,
+                prescriptionSummary: [],
             };
+        },
+        created() {
+            this.fetchPrescriptionSummary();
         },
         methods: {
             toggleAccordion() {
@@ -148,6 +156,22 @@
                     this.accordionCollapse = new Collapse(this.$refs.accordionContent);
                 } else {
                     this.accordionCollapse.toggle();
+                }
+            },
+            // Get prescription summary
+            async fetchPrescriptionSummary() {
+                try {
+                    const response = await axios.post("/api/prescription/GetPrescriptionSummary", {
+                        staffId: this.staffId,
+                    });
+                    if (response.data.success) {
+                        this.prescriptionSummary = response.data.prescriptionSummary;
+                    } else {
+                        console.log('Failed to get prescription summary:', response.data.message);
+
+                    }
+                } catch (error) {
+                    console.error('Error fetching prescription summary:', error);
                 }
             },
         },

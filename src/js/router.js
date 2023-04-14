@@ -42,7 +42,7 @@ const routes = [
         path: '/prescription',
         name: 'Prescription',
         component: PrescriptionPage,
-        meta: { requiresAuth: false },
+        meta: { requiresAuth: true },
     },
 ];
 
