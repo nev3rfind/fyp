@@ -80,38 +80,18 @@
                                         <tbody>
                                             <tr>
                                                 <td colspan="3">
-                                                    <div class="table-scroll">
+                                                    <div v-if="patients[index] && patients[index].length > 0"  class="table-scroll">
                                                         <table class="table table-borderless">
-                                                            <tbody>
-                                                                <tr>
-                                                                    <td>Bob Johnson</td>
-                                                                    <td class="text-center"><span class="badge rounded-pill bg-success">17/03/2023</span></td>
+                                                            <tbody v-if="prescription.patients && prescription.patients.length > 0">
+                                                                <tr v-for="(patient, patientIndex) in prescription.patients" :key="patientIndex">
+                                                                    <td>{{ patient.PatientName }}</td>
+                                                                    <td class="text-center"><span class="badge rounded-pill bg-success">{{ formatPresDate(patient.EndDate) }}</span></td>
                                                                     <td><button class="btn btn-success btn-sm border text-white">Confirm</button></td>
                                                                 </tr>
+                                                            </tbody>
+                                                            <tbody v-else>
                                                                 <tr>
-                                                                    <td>Bob Johnson</td>
-                                                                    <td class="text-center"><span class="badge rounded-pill bg-danger">17/03/2023</span></td>
-                                                                    <td><button class="btn btn-success btn-sm border text-white">Confirm</button></td>
-                                                                </tr>
-                                                                <tr>
-                                                                    <td>Bob Johnson</td>
-                                                                    <td class="text-center"><span class="badge rounded-pill bg-success">17/03/2023</span></td>
-                                                                    <td><button class="btn btn-success btn-sm border text-white">Confirm</button></td>
-                                                                </tr>
-                                                                <tr>
-                                                                    <td>Bob Johnson</td>
-                                                                    <td class="text-center"><span class="badge rounded-pill bg-danger">17/03/2023</span></td>
-                                                                    <td><button class="btn btn-success btn-sm border text-white">Confirm</button></td>
-                                                                </tr>
-                                                                <tr>
-                                                                    <td>Bob Johnson</td>
-                                                                    <td class="text-center"><span class="badge rounded-pill bg-success">17/03/2023</span></td>
-                                                                    <td><button class="btn btn-success btn-sm border text-white">Confirm</button></td>
-                                                                </tr>
-                                                                <tr>
-                                                                    <td>Bob Johnson</td>
-                                                                    <td class="text-center"><span class="badge rounded-pill bg-danger">17/03/2023</span></td>
-                                                                    <td><button class="btn btn-success btn-sm border text-white">Confirm</button></td>
+                                                                    <td colspan="3" class="text-center">No patients found</td>
                                                                 </tr>
                                                             </tbody>
                                                         </table>
@@ -144,6 +124,7 @@
                 accordionCollapse: null,
                 prescriptionSummary: [],
                 groupedPrescriptions: [],
+                patients: [],
             };
         },
         created() {
@@ -156,7 +137,7 @@
             formatPresDate(date) {
                 return moment(date).format("DD MMM YYYY");
             },
-            toggleAccordion(index, medicationId) {
+            async toggleAccordion(index, medicationId) {
                 const updatedIsAccordionOpen = [...this.isAccordionOpen];
                 updatedIsAccordionOpen[index] = !updatedIsAccordionOpen[index];
                 this.isAccordionOpen = updatedIsAccordionOpen;
@@ -165,9 +146,11 @@
                 const accordionCollapse = new Collapse(collapseElement);
 
                 if (this.isAccordionOpen[index]) {
+                    await this.fetchPatientsList(index, medicationId);
                     accordionCollapse.show();
                 } else {
                     accordionCollapse.hide();
+                    this.patients[index] = [];
                 }
             },
             // Get prescription summary
@@ -200,6 +183,23 @@
                     }
                 } catch (error) {
                     console.error('Error fetching  grouped prescriptions:', error);
+                }
+            },
+            // Get patients list by medication and staff id (when accordion is clicked)
+            async fetchPatientsList(index, medicationId) {
+                try {
+                    const response = await axios.post("/api/prescription/GetPatientsByMedicationIdAndStaffId", {
+                        staffId: this.staffId,
+                        medicationId: medicationId,
+                    });
+                    if (response.data.success) {
+                        console.log('Prescription summary data:', response.data);
+                        this.patients[index] = response.data.patients;
+                    } else {
+                        console.log('Failed to get grouped prescriptions:', response.data.message);
+                    }
+                } catch (error) {
+                    console.error('Error fetching grouped prescriptions:', error);
                 }
             },
         },

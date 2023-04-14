@@ -93,6 +93,11 @@ namespace NhsImsApp.Controllers
             });
         }
 
+        /// <summary>
+        /// Gets active and about to expire prescription count grouped by medication
+        /// </summary>
+        /// <param name="staffId"></param>
+        /// <returns>Active and about to expire prescription count grouped by medication COUNT</returns>
         [HttpPost]
         public ActionResult GetStaffPrescriptionsGroupedByMedication(int staffId)
         {
@@ -131,6 +136,43 @@ namespace NhsImsApp.Controllers
                 success = true
             });
 
+        }
+
+        /// <summary>
+        /// Gets patient list that has prescribed given medication and prescription was made by given staffId
+        /// </summary>
+        /// <param name="staffId"></param>
+        /// <param name="medicationId"></param>
+        /// <returns>Patient list with prescription endDate</returns>
+        [HttpPost]
+        public ActionResult GetPatientsByMedicationIdAndStaffId(int staffId, int medicationId)
+        {
+            var medicationData = _Context.PatientMedications
+                .Where(a => a.MedicationId == medicationId && a.StaffId == staffId && a.IsRenewed == false)
+                .Include(a => a.Patient)
+                .ToList();
+
+            if(medicationData.Any())
+            {
+                var patientList = medicationData.Select(a => new
+                {
+                    PrescriptionId = a.Id,
+                    PatientName = a.Patient.FullName,
+                    a.EndDate,
+                }).ToList();
+
+                return Json(new
+                {
+                    patientList = patientList,
+                    success = true
+                });
+            }
+
+            return Json(new
+            {
+                patientList = 0,
+                success = true
+            });
         }
     }
 } 
