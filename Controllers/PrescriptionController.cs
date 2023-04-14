@@ -8,6 +8,7 @@ using NhsImsApp.Models;
 using NhsImsApp.Data;
 using System.Security.Cryptography;
 using System.Text;
+using System.Data.Entity;
 
 namespace NhsImsApp.Controllers
 {
@@ -92,5 +93,44 @@ namespace NhsImsApp.Controllers
             });
         }
 
+        [HttpPost]
+        public ActionResult GetStaffPrescriptionsGroupedByMedication(int staffId)
+        {
+            var currentDate = DateTime.Now;
+            var oneWeekAgo = currentDate.AddDays(-7);
+
+            var prescriptionsData = _Context.PatientMedications
+                .Where(a => a.StaffId == staffId)
+                .Include(a => a.Medication)
+                .ToList();
+
+            if (prescriptionsData.Count > 0)
+            {
+                var groupedPrescriptions = prescriptionsData
+                 .GroupBy(a => a.MedicationId)
+                 .Select(group => new
+                 {
+                     MedicationId = group.Key,
+                     MedicationName = group.First().Medication.MedicationName,
+                     MostRecentPrescriptionDate = group.Max(a => a.PrescriptionDate),
+                     ActivePrescriptionsCount = group.Count(a => a.StartDate <= currentDate && a.EndDate >= currentDate),
+                     ExpiringPrescriptionsCount = group.Count(a => a.EndDate >= oneWeekAgo && a.EndDate <= currentDate)
+                 })
+                 .ToList();
+
+                return Json(new
+                {
+                    groupedPrescriptions = groupedPrescriptions,
+                    success = true
+                });
+            }
+
+            return Json(new
+            {
+                groupedPrescriptions = 0,
+                success = true
+            });
+
+        }
     }
 } 

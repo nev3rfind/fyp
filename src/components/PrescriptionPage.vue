@@ -15,7 +15,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-xl-6 col-sm-6 col-md-6 col-6">
+                <div class="col-xl-6 col-sm-6 col-md-12 col-6">
                     <div class="card mb-2 head-card">
                         <div class="card-content">
                             <div class="card-body">
@@ -43,31 +43,31 @@
                 </div>
             </div>
             <div class="row">
-                <div class="col-xl-6 col-sm-12 col-md-12 col-12">
-                    <div class="accordion" id="customAccordion">
+                <div v-if="groupedPrescriptions !== 0" v-for="(prescription, index) in groupedPrescriptions" :key="prescription.MedicationId" class="col-xl-6 col-sm-12 col-md-6 col-12">
+                    <div class="accordion mb-3" :id="`accordion-${prescription.MedicationId}`">
                         <div class="accordion-item">
-                            <div class="accordion-header d-flex justify-content-between align-items-center" :class="{ 'accordion-border-blue': isAccordionOpen }" @click="toggleAccordion">
+                            <div class="accordion-header d-flex justify-content-between align-items-center" :class="{ 'accordion-border-blue': isAccordionOpen[index] }" @click="toggleAccordion(index, prescription.MedicationId)">
                                 <div class="vertical-line"></div>
                                 <div class="left-side text-center">
-                                    <p>Medication</p>
+                                    <p>{{ prescription.MedicationName }}</p>
                                     <p>Last Prescribed:</p>
-                                    <p>07 Jul 2023</p>
+                                    <p>{{ formatPresDate(prescription.MostRecentPrescriptionDate)}}</p>
                                 </div>
                                 <div class="right-side ms-5 d-flex justify-content-between align-items-center">
                                     <div class="text-center">
                                         <p class="fw-bold">Active</p>
-                                        <p class="count-status text-success">24</p>
+                                        <p class="count-status text-success">{{ prescription.ActivePrescriptionsCount }}</p>
                                     </div>
-                                    <button class="btn btn-link" :class="{ rotate: isAccordionOpen }" type="button" data-bs-toggle="collapse" data-bs-target="#customAccordionContent" aria-expanded="false" aria-controls="customAccordionContent">
-                                        <i class='bx bx-chevron-down accordion-icon'></i>
+                                    <button class="btn btn-link" type="button" data-bs-toggle="collapse" :data-bs-target="`#accordion-collapse-${prescription.MedicationId}`" aria-expanded="false" :aria-controls="`accordion-collapse-${prescription.MedicationId}`" @click="toggleAccordion(index, prescription.MedicationId)">
+                                        <i class='bx bx-chevron-down accordion-icon' :class="{ 'rotate-chevron': isAccordionOpen[index] }"></i>
                                     </button>
                                     <div class="text-center">
                                         <p class="fw-bold">Expiring</p>
-                                        <p class="count-status text-danger">1</p>
+                                        <p class="count-status text-danger">{{ prescription.ExpiringPrescriptionsCount }}</p>
                                     </div>
                                 </div>
                             </div>
-                            <div id="customAccordionContent" ref="accordionContent" class="accordion-collapse collapse" data-bs-parent="#customAccordion">
+                            <div :id="`accordion-collapse-${prescription.MedicationId}`" class="accordion-collapse collapse" :data-bs-parent="`#accordion-${prescription.MedicationId}`">
                                 <div class="accordion-body pt-2 p-0">
                                     <table class="table table-borderless">
                                         <thead>
@@ -140,22 +140,34 @@
             const staffId = this.$store.state.user ? this.$store.state.user.staffId : null;
             return {
                 staffId: staffId,
-                isAccordionOpen: false,
+                isAccordionOpen: [],
                 accordionCollapse: null,
                 prescriptionSummary: [],
+                groupedPrescriptions: [],
             };
         },
         created() {
             this.fetchPrescriptionSummary();
+            this.fetchGroupedPrescription();
+            this.fetchGroupedPrescription();
         },
         methods: {
-            toggleAccordion() {
-                this.isAccordionOpen = !this.isAccordionOpen;
+            // Format prescription date
+            formatPresDate(date) {
+                return moment(date).format("DD MMM YYYY");
+            },
+            toggleAccordion(index, medicationId) {
+                const updatedIsAccordionOpen = [...this.isAccordionOpen];
+                updatedIsAccordionOpen[index] = !updatedIsAccordionOpen[index];
+                this.isAccordionOpen = updatedIsAccordionOpen;
 
-                if (!this.accordionCollapse) {
-                    this.accordionCollapse = new Collapse(this.$refs.accordionContent);
+                const collapseElement = document.getElementById(`accordion-collapse-${medicationId}`);
+                const accordionCollapse = new Collapse(collapseElement);
+
+                if (this.isAccordionOpen[index]) {
+                    accordionCollapse.show();
                 } else {
-                    this.accordionCollapse.toggle();
+                    accordionCollapse.hide();
                 }
             },
             // Get prescription summary
@@ -172,6 +184,22 @@
                     }
                 } catch (error) {
                     console.error('Error fetching prescription summary:', error);
+                }
+            },
+            // Get prescription grouped by medication
+            async fetchGroupedPrescription() {
+                try {
+                    const response = await axios.post("/api/prescription/GetStaffPrescriptionsGroupedByMedication", {
+                        staffId: this.staffId,
+                    });
+                    if (response.data.success) {
+                        this.groupedPrescriptions = response.data.groupedPrescriptions;
+                    } else {
+                        console.log('Failed to get grouped prescriptions:', response.data.message);
+
+                    }
+                } catch (error) {
+                    console.error('Error fetching  grouped prescriptions:', error);
                 }
             },
         },
@@ -343,6 +371,11 @@
 
     .table .btn {
         width: 100%;
+    }
+
+    .rotate-chevron {
+        transform: rotate(180deg);
+        transition: transform 0.3s ease;
     }
 
 
