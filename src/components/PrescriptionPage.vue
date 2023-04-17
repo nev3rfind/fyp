@@ -80,16 +80,25 @@
                                         <tbody>
                                             <tr>
                                                 <td colspan="3">
-                                                    <div v-if="patients[index] && patients[index].length > 0"  class="table-scroll">
+                                                    <!-- If patients were found -->
+                                                    <div v-if="patients[index] && patients[index].length > 0" class="table-scroll">
                                                         <table class="table table-borderless">
-                                                            <tbody v-if="prescription.patients && prescription.patients.length > 0">
-                                                                <tr v-for="(patient, patientIndex) in prescription.patients" :key="patientIndex">
+                                                            <tbody>
+                                                                <tr v-for="(patient, patientIndex) in patients[index]" :key="patient.PrescriptionId">
                                                                     <td>{{ patient.PatientName }}</td>
-                                                                    <td class="text-center"><span class="badge rounded-pill bg-success">{{ formatPresDate(patient.EndDate) }}</span></td>
-                                                                    <td><button class="btn btn-success btn-sm border text-white">Confirm</button></td>
+                                                                    <td v-if="patient.PrescriptionStatus==='Active'" class="text-center"><span class="badge rounded-pill bg-success">{{ formatPresDate(patient.EndDate) }}</span></td>
+                                                                    <td v-else class="text-center"><span class="badge rounded-pill bg-danger">{{ formatPresDate(patient.EndDate) }}</span></td>
+                                                                    <td v-if="patient.IsRenewed == true" class="text-center"><span class="badge rounded-pill bg-light fw-bold text-success">Extended</span></td>
+                                                                    <td v-else><button class="btn btn-success btn-sm border text-white">Confirm</button></td>
                                                                 </tr>
                                                             </tbody>
-                                                            <tbody v-else>
+                                                         
+                                                        </table>
+                                                    </div>
+                                                    <!-- Patients not found -->
+                                                    <div v-else class="table-scroll">
+                                                        <table class="table table-borderless">
+                                                            <tbody>
                                                                 <tr>
                                                                     <td colspan="3" class="text-center">No patients found</td>
                                                                 </tr>
@@ -194,7 +203,8 @@
                     });
                     if (response.data.success) {
                         console.log('Prescription summary data:', response.data);
-                        this.patients[index] = response.data.patients;
+                        this.patients[index] = response.data.patientList;
+                        console.log(this.patients[index])
                     } else {
                         console.log('Failed to get grouped prescriptions:', response.data.message);
                     }

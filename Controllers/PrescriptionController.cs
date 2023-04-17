@@ -42,8 +42,8 @@ namespace NhsImsApp.Controllers
                 double renewedProcentage = (double)renewedPrescriptions / totalPrescription * 100;
                 renewedProcentage = Math.Round(renewedProcentage, 0);
 
-                return Json(new 
-                { 
+                return Json(new
+                {
                     success = true,
                     totalPrescriptions = totalPrescription,
                     renewedPrescriptions = renewedPrescriptions,
@@ -140,6 +140,7 @@ namespace NhsImsApp.Controllers
 
         /// <summary>
         /// Gets patient list that has prescribed given medication and prescription was made by given staffId
+        /// and it is active or expiring
         /// </summary>
         /// <param name="staffId"></param>
         /// <param name="medicationId"></param>
@@ -147,23 +148,28 @@ namespace NhsImsApp.Controllers
         [HttpPost]
         public ActionResult GetPatientsByMedicationIdAndStaffId(int staffId, int medicationId)
         {
-            var medicationData = _Context.PatientMedications
-                .Where(a => a.MedicationId == medicationId && a.StaffId == staffId && a.IsRenewed == false)
-                .Include(a => a.Patient)
-                .ToList();
+            var currentDate = DateTime.Now;
+            var oneWeekAgo = currentDate.AddDays(-7);
 
-            if(medicationData.Any())
-            {
-                var patientList = medicationData.Select(a => new
+            var medicationData = _Context.PatientMedications
+                .Where(a => a.MedicationId == medicationId && a.StaffId == staffId &&
+                            (a.StartDate <= currentDate && a.EndDate >= currentDate || a.EndDate >= oneWeekAgo && a.EndDate <= currentDate))
+                .Include(a => a.Patient)
+                .Select(a => new
                 {
                     PrescriptionId = a.Id,
                     PatientName = a.Patient.FullName,
                     a.EndDate,
+                    PrescriptionStatus = a.StartDate <= currentDate && a.EndDate >= currentDate ? "Active" :
+                                         a.EndDate >= oneWeekAgo && a.EndDate <= currentDate ? "Expiring" : "",
+                    IsRenewed = a.IsRenewed,
                 }).ToList();
 
+            if (medicationData.Any())
+            {
                 return Json(new
                 {
-                    patientList = patientList,
+                    patientList = medicationData,
                     success = true
                 });
             }
