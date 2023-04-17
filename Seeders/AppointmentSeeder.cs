@@ -28,7 +28,7 @@ namespace NhsImsApp.Seeders
                     .RuleFor(a => a.Status, f => f.PickRandom(appointmentStatuses))
                     .RuleFor(a => a.AttendanceConfirmed, (f, a) => a.Status == "Attended");
 
-                var staffIds = Enumerable.Range(214, 7).ToList(); // Staff IDs from 214 to 220
+                var staffIds = Enumerable.Range(1, 7).ToList(); // Staff IDs from 1 to 8
                 var random = new Random();
                 var appointments = new List<Appointment>(10 * staffIds.Count); // Preallocate memory for appointments
 

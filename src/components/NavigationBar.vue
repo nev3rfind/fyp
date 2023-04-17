@@ -41,7 +41,7 @@
                     </a>
                 </li>
                 <li class="main-nav-item">
-                    <a id="compareButton" href="#" class="main-nav-link">
+                    <a id="compareButton" href="#" @click.prevent="navigateToRoute('/prescription')" class="main-nav-link">
                         <i class="bx bxs-capsule"></i>
                         <span class="menu-link">Prescription</span>
                     </a>

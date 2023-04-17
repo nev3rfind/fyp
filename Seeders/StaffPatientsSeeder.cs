@@ -16,7 +16,7 @@ namespace NhsImsApp.Seeders
         {
             if (!context.StaffPatients.Any())
             {
-                var staffIds = context.Staffs.Select(s => s.StaffId).ToList();
+                var staffIds = context.Staffs.Select(s => s.StaffId).Take(8).ToList();
                 var patientIds = context.Patients.Where(p => p.PatientId >= 200)
                                                  .Select(p => p.PatientId)
                                                  .ToList();
