@@ -5,6 +5,7 @@ import NotFound from '../components/NotFound';
 import PatientSearch from '../components/PatientSearch';
 import PatientDetails from '../components/PatientDetails';
 import PrescriptionPage from '../components/PrescriptionPage';
+import AppointmentsPage from '../components/AppointmentsPage';
 import store from "./store";
 
 const routes = [
@@ -43,6 +44,12 @@ const routes = [
         name: 'Prescription',
         component: PrescriptionPage,
         meta: { requiresAuth: true },
+    },
+    {
+        path: '/appointments',
+        name: 'Appointments',
+        component: AppointmentsPage,
+        meta: { requiresAuth: false },
     },
 ];
 
