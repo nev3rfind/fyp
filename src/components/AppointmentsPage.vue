@@ -72,33 +72,168 @@
                             </div>
                         </div>
                     </div>
-                </div>                 
+                </div>
             </transition>
             <div class="row scrollable-container">
-                <div class="col-xl-6 col-sm-12 col-md-12 col-12 mt-0">
-                    <div class="card mb-2 appointment-card">
-                        <div class="card-content">
-                            <div class="card-body card-top ps-4">
-                                <div class="top-card-text mb-2"><span class="badge bg-danger badge-app">Not attended</span></div>
-                                <div class="top-card-text"><i class='bx bxs-time time-icon'></i> 12 January 2020, 8:35AM</div>
-                            </div>
-                            <div class="card-body card-down ps-4">
-                                <div class="avatar-block">
-                                    <div class="avatar-initials">JH</div>
+                <transition name="flip-right" mode="out-in">
+                    <div v-if="!modifyingAppointment[1]" class="col-xl-6 col-sm-12 col-md-12 col-12 mt-0">
+                        <div class="card mb-2 appointment-card">
+                            <div class="card-content">
+                                <div class="card-body card-top ps-4">
+                                    <div class="top-card-text mb-2"><span class="badge bg-danger badge-app">Not attended</span></div>
+                                    <div class="top-card-text"><i class='bx bxs-time time-icon'></i> 12 January 2020, 8:35AM</div>
                                 </div>
-                                <div class="card-down-content d-inline-block ps-3">
-                                    <p class="mb-0">John <strong>Hopkins</strong></p>
-                                    <p class="mb-2">22/12/1999</p>
-                                    <div class="mb-3"><span class="badge border bg-app-name"><i class='bx bxs-info-circle'></i> Award integration executive</span></div>
-                                </div>
-                                <div class="d-flex buttons-row">
-                                    <button class="btn btn-sm btn-success w-50">Modify</button>
-                                    <button class="btn btn-sm btn-warning w-25 ms-2 me-2 text-dark">Cancel</button>
-                                    <button class="btn btn-sm btn-danger w-25">Delete</button>
+                                <div class="card-body card-down ps-4">
+                                    <div class="avatar-block">
+                                        <div class="avatar-initials">JH</div>
+                                    </div>
+                                    <div class="card-down-content d-inline-block ps-3">
+                                        <p class="mb-0">John <strong>Hopkins</strong></p>
+                                        <p class="mb-2">22/12/1999</p>
+                                        <div class="mb-3"><span class="badge border bg-app-name"><i class='bx bxs-info-circle'></i> Award integration executive</span></div>
+                                    </div>
+                                    <div class="d-flex buttons-row">
+                                        <button class="btn btn-sm btn-success w-50" @click="startModifyingAppointment(1)">Modify</button>
+                                        <button class="btn btn-sm btn-warning w-25 ms-2 me-2 text-dark" @click="openCancelModal(1)">Cancel</button>
+                                        <button class="btn btn-sm btn-danger w-25">Delete</button>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
+                    <div v-else class="col-xl-6 col-sm-12 col-md-12 col-12 mt-0">
+                        <!-- Modify appointment card -->
+                        <div class="card mb-2 appointment-card">
+                            <div class="card-content">
+                                <div class="card-body">
+                                    <h5 class="mb-3">Modifying appointment #{{ modifyingAppointment.id }}</h5>
+                                    <div class="mb-3">
+                                        <label for="patient-select" class="form-label">Patient</label>
+                                        <select class="form-select border" id="patient-select" v-model="selectedPatient">
+                                            <option selected disabled value="1">Please select a patient</option>
+                                            <option v-for="patient in patients" :key="patient.PatientId" :value="patient.PatientId">
+                                                {{ patient.PatientName }}
+                                            </option>
+                                            <option>ds</option>
+                                        </select>
+                                        <div v-if="patientError" class="invalid-feedback">{{ patientError }}</div>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="status-select" class="form-label">Appointment Status</label>
+                                        <select class="form-select border" id="status-select" v-model="selectedStatus">
+                                            <option value="1">Attented</option>
+                                        </select>
+                                        <div v-if="patientError" class="invalid-feedback">{{ patientError }}</div>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="appointment-date" class="form-label">Appointment Date</label>
+                                        <input type="date" :class="{ 'is-invalid': dateError }" class="form-control border" id="appointment-date" v-model="appointmentDate">
+                                        <div v-if="dateError" class="invalid-feedback">{{ dateError }}</div>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="appointment-name" class="form-label">Appointment Name</label>
+                                        <input type="text" :class="{ 'is-invalid': nameError }" class="form-control border" id="appointment-name" v-model="appointmentName">
+                                        <div v-if="nameError" class="invalid-feedback">{{ nameError }}</div>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="appointment-description" class="form-label">Appointment Description</label>
+                                        <textarea :class="{ 'is-invalid': descriptionError }" class="form-control border" id="appointment-description" v-model="appointmentDescription"></textarea>
+                                        <div v-if="descriptionError" class="invalid-feedback">{{ descriptionError }}</div>
+                                    </div>
+                                    <div class="d-flex justify-content-between buttons-row">
+                                        <button class="btn btn-light btn-sm border confirm-btn" @click="cancelModifyAppointment(1)">Cancel</button>
+                                        <button class="btn btn-success btn-sm" @click="updateAppointment(1)">Update</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </transition>
+                <transition name="flip-right" mode="out-in">
+                    <div v-if="!modifyingAppointment[2]" class="col-xl-6 col-sm-12 col-md-12 col-12 mt-0">
+                        <div class="card mb-2 appointment-card">
+                            <div class="card-content">
+                                <div class="card-body card-top ps-4">
+                                    <div class="top-card-text mb-2"><span class="badge bg-danger badge-app">Not attended</span></div>
+                                    <div class="top-card-text"><i class='bx bxs-time time-icon'></i> 12 January 2020, 8:35AM</div>
+                                </div>
+                                <div class="card-body card-down ps-4">
+                                    <div class="avatar-block">
+                                        <div class="avatar-initials">JH</div>
+                                    </div>
+                                    <div class="card-down-content d-inline-block ps-3">
+                                        <p class="mb-0">John <strong>Hopkins</strong></p>
+                                        <p class="mb-2">22/12/1999</p>
+                                        <div class="mb-3"><span class="badge border bg-app-name"><i class='bx bxs-info-circle'></i> Award integration executive</span></div>
+                                    </div>
+                                    <div class="d-flex buttons-row">
+                                        <button class="btn btn-sm btn-success w-50" @click="startModifyingAppointment(2)">Modify</button>
+                                        <button class="btn btn-sm btn-warning w-25 ms-2 me-2 text-dark">Cancel</button>
+                                        <button class="btn btn-sm btn-danger w-25">Delete</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div v-else class="col-xl-6 col-sm-12 col-md-12 col-12 mt-0">
+                        <!-- Modify appointment card -->
+                        <div class="card mb-2 appointment-card">
+                            <div class="card-content">
+                                <div class="card-body">
+                                    <h5 class="mb-3">Modifying appointment #{{ modifyingAppointment.id }}</h5>
+                                    <div class="mb-3">
+                                        <label for="patient-select" class="form-label">Patient</label>
+                                        <select class="form-select border" id="patient-select" v-model="selectedPatient">
+                                            <option selected disabled value="1">Please select a patient</option>
+                                            <option v-for="patient in patients" :key="patient.PatientId" :value="patient.PatientId">
+                                                {{ patient.PatientName }}
+                                            </option>
+                                            <option>ds</option>
+                                        </select>
+                                        <div v-if="patientError" class="invalid-feedback">{{ patientError }}</div>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="appointment-date" class="form-label">Appointment Date</label>
+                                        <input type="date" :class="{ 'is-invalid': dateError }" class="form-control border" id="appointment-date" v-model="appointmentDate">
+                                        <div v-if="dateError" class="invalid-feedback">{{ dateError }}</div>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="appointment-name" class="form-label">Appointment Name</label>
+                                        <input type="text" :class="{ 'is-invalid': nameError }" class="form-control border" id="appointment-name" v-model="appointmentName">
+                                        <div v-if="nameError" class="invalid-feedback">{{ nameError }}</div>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="appointment-description" class="form-label">Appointment Description</label>
+                                        <textarea :class="{ 'is-invalid': descriptionError }" class="form-control border" id="appointment-description" v-model="appointmentDescription"></textarea>
+                                        <div v-if="descriptionError" class="invalid-feedback">{{ descriptionError }}</div>
+                                    </div>
+                                    <div class="d-flex justify-content-between buttons-row">
+                                        <button class="btn btn-light btn-sm border confirm-btn" @click="cancelModifyAppointment(2)">Cancel</button>
+                                        <button class="btn btn-success btn-sm" @click="updateAppointment(2)">Update</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </transition>
+            </div>
+        </div>
+    </div>
+    <!-- Cancel appointment modal -->
+    <div class="modal fade" id="cancelAppointmentModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Cancel Appointment</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body text-center">
+                    <p>Are you sure you want to cancel this appointment?</p>
+                    <p class="fw-bold text-danger">Appointment status will reflect immediately.</p>
+                </div>
+                <div class="modal-footer d-flex justify-content-between buttons-row">
+                    <button class="btn btn-light btn-sm border confirm-btn w-25"  data-bs-dismiss="modal">Cancel</button>
+                    <button class="btn btn-success btn-sm w-50" @click="confirmCancelAppointment">Confirm</button>
                 </div>
             </div>
         </div>
@@ -107,6 +242,7 @@
 
 <script>
     import axios from 'axios';
+    import { Modal } from 'bootstrap';
 
     export default {
         data() {
@@ -122,6 +258,8 @@
                 nameError: null,
                 descriptionError: null,
                 appointmentAdded: false,
+                modifyingAppointment: {},
+                selectedAppointmentId: null,
             };
         },
         async mounted() {
@@ -180,6 +318,18 @@
             cancelAddAppointment() {
                 this.showNewAppointmentCard = false;
                 this.resetForm();
+            },
+            startModifyingAppointment(appointmentId) {
+                this.modifyingAppointment[appointmentId] = true;
+                
+            },
+            cancelModifyAppointment(appointmentId) {
+                delete this.modifyingAppointment[appointmentId];
+            },
+            openCancelModal(appointmentId) {
+                this.selectedAppointmentId = appointmentId;
+                const modal = new Modal(document.getElementById('cancelAppointmentModal'));
+                modal.show();
             },
         },
     };
@@ -354,6 +504,31 @@
     .slide-fade-leave-to {
         opacity: 0;
         transform: translateY(-30px);
+    }
+
+    .flip-right-enter-active,
+    .flip-right-leave-active,
+    .flip-left-enter-active,
+    .flip-left-leave-active {
+        transition: all 0.5s;
+    }
+
+    .flip-right-enter-from,
+    .flip-left-leave-to {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+
+    .flip-right-leave-to,
+    .flip-left-enter-from {
+        transform: translateX(-100%);
+        opacity: 0;
+    }
+
+    .btn-close {
+        border: none;
+        background: transparent;
+        color: black!important;
     }
 
 </style>
