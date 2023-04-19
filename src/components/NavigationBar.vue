@@ -41,13 +41,13 @@
                     </a>
                 </li>
                 <li class="main-nav-item">
-                    <a id="compareButton" href="#" @click.prevent="navigateToRoute('/prescription')" class="main-nav-link">
+                    <a href="#" @click.prevent="navigateToRoute('/prescription')" class="main-nav-link">
                         <i class="bx bxs-capsule"></i>
                         <span class="menu-link">Prescription</span>
                     </a>
                 </li>
                 <li class="main-nav-item">
-                    <a href="ranking.html" class="main-nav-link">
+                    <a href="#" @click.prevent="navigateToRoute('/appointments')" class="main-nav-link">
                         <i class='bx bxs-calendar'></i>
                         <span class="menu-link">Appointments</span>
                     </a>

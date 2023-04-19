@@ -98,5 +98,41 @@ namespace NhsImsApp.Controllers
                 success = false
             });
         }
+
+        [HttpPost]
+        public ActionResult GetAppointmentsByRange(int staffId, DateTime startDate, DateTime endDate)
+        {
+            var appointmentsData = _Context.Appointments
+                .Where(a => a.StaffId == staffId && a.AppointmentDate >= startDate && a.AppointmentDate <= endDate)
+                .Include(a => a.Patient)
+                .OrderBy(a => a.AppointmentDate)
+                .ToList();
+
+            if (appointmentsData.Any())
+            {
+                var appointments = appointmentsData.Select(a => new
+                {
+                    a.AppointmentId,
+                    a.AppointmentDate,
+                    PatientFullName = a.Patient.FullName,
+                    PatientDob = a.Patient.Dob,
+                    a.AppointmentName,
+                    a.Description,
+                    a.Status,
+                }).ToList();
+
+                return Json(new
+                {
+                    success = true,
+                    appointments = appointments
+                });
+            }
+
+            return Json(new
+            {
+                success = true,
+                appointments = 0
+            });
+        }
     }
 }

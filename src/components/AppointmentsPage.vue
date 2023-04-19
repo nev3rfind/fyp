@@ -17,8 +17,8 @@
                                         <input type="date" class="form-control border" id="start-date" v-model="startDate">
                                     </div>
                                     <div class="col-6">
-                                        <label for="start-date" class="form-label">Date range to</label>
-                                        <input type="date" class="form-control border" id="start-date" v-model="startDate">
+                                        <label for="end-date" class="form-label">Date range to</label>
+                                        <input type="date" class="form-control border" id="end-date" v-model="endDate">
                                     </div>
                                 </div>
                             </div>
@@ -246,7 +246,16 @@
 
     export default {
         data() {
+            const staffId = this.$store.state.user ? this.$store.state.user.staffId : null;
+            const currentDate = new Date();
+            const oneWeek = 7 * 24 * 60 * 60 * 1000;
+            const startDate = new Date(currentDate.getTime() - oneWeek);
+            const endDate = new Date(currentDate.getTime() + oneWeek);
+
             return {
+                staffId: staffId,
+                startDate: startDate.toISOString().split('T')[0],
+                endDate: endDate.toISOString().split('T')[0],
                 showNewAppointmentCard: false,
                 patients: [],
                 selectedPatient: null,
@@ -260,10 +269,23 @@
                 appointmentAdded: false,
                 modifyingAppointment: {},
                 selectedAppointmentId: null,
+                appointments: [],
             };
         },
         async mounted() {
-            // Load patients data here
+            await this.fetchAppointments();
+        },
+        watch: {
+            startDate: {
+                handler() {
+                    this.fetchAppointments();
+                },
+            },
+            endDate: {
+                handler() {
+                    this.fetchAppointments();
+                },
+            },
         },
         methods: {
             showAddAppointment() {
@@ -330,6 +352,24 @@
                 this.selectedAppointmentId = appointmentId;
                 const modal = new Modal(document.getElementById('cancelAppointmentModal'));
                 modal.show();
+            },
+            // Get appointemnts by given date range
+            async fetchAppointments() {
+                try {
+                    const response = await axios.post("/api/appointment/GetAppointmentsByRange", {
+                        staffId: this.staffId,
+                        startDate: this.startDate,
+                        endDate: this.endDate,
+                    });
+                    if (response.data.success) {
+                        console.log(response.data);
+                        this.appointments = response.data.appointments;
+                    } else {
+                        console.log('Failed to get appointments:');
+                    }
+                } catch (error) {
+                    console.error(error);
+                }
             },
         },
     };

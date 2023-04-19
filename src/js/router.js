@@ -49,7 +49,7 @@ const routes = [
         path: '/appointments',
         name: 'Appointments',
         component: AppointmentsPage,
-        meta: { requiresAuth: false },
+        meta: { requiresAuth: true },
     },
 ];
 
