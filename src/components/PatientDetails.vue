@@ -82,7 +82,7 @@
                                     <div class="mb-3">
                                         <label for="medication-select" class="form-label">Medication</label>
                                         <select class="form-select border" id="medication-select" v-model="selectedMedication">
-                                            <option disabled value="">Please select a medication</option>
+                                            <option disabled selected value="">Please select a medication</option>
                                             <option v-for="medication in medications" :key="medication.MedicationId" :value="medication.MedicationId">
                                                 {{ medication.MedicationName }}
                                             </option>
