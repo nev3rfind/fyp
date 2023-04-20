@@ -110,15 +110,25 @@ namespace NhsImsApp.Controllers
 
             if (appointmentsData.Any())
             {
-                var appointments = appointmentsData.Select(a => new
+                var appointments = appointmentsData.Select(a => {
+                // Make initials from first letter of first and last name
+                var names = a.Patient.FullName.Split(' ');
+                var initials = "";
+                if (names.Length >= 2)
                 {
-                    a.AppointmentId,
-                    a.AppointmentDate,
-                    PatientFullName = a.Patient.FullName,
-                    PatientDob = a.Patient.Dob,
-                    a.AppointmentName,
-                    a.Description,
-                    a.Status,
+                    initials = names[0].Substring(0, 1) + names[names.Length - 1].Substring(0, 1);
+                }
+                    return new
+                    {
+                        a.AppointmentId,
+                        a.AppointmentDate,
+                        PatientFullName = a.Patient.FullName,
+                        PatientDob = a.Patient.Dob,
+                        a.AppointmentName,
+                        a.Description,
+                        a.Status,
+                        Initials = initials
+                    };
                 }).ToList();
 
                 return Json(new
