@@ -38,7 +38,7 @@
                                     <div class="mb-3">
                                         <label for="patient-select" class="form-label">Patient</label>
                                         <select class="form-select border" id="patient-select" v-model="selectedPatient">
-                                            <option selected disabled>Please select a patient</option>
+                                            <option disabled :value="null">Please select a patient</option>
                                             <option v-for="patient in patients" :key="patient.PatientId" :value="patient.PatientId">
                                                 {{ patient.fullName }}
                                             </option>
@@ -83,7 +83,7 @@
                                     <div class="top-card-text mb-2">
                                         <span class="badge bg-success badge-app" v-if="appointment.Status === 'Attended'">{{ appointment.Status }}</span>
                                         <span class="badge bg-warning badge-app" v-else-if="appointment.Status === 'Scheduled'">{{ appointment.Status }}</span>
-                                        <span class="badge bg-warning badge-app" v-else-if="appointment.Status === 'Cancelled'">{{ appointment.Status }}</span>
+                                        <span class="badge bg-danger badge-app" v-else-if="appointment.Status === 'Cancelled'">{{ appointment.Status }}</span>
                                         <span class="badge bg-danger badge-app" v-else>{{ appointment.Status }}</span>
                                     </div>
                                     <div class="top-card-text"><i class='bx bxs-time time-icon'></i>{{ formatDate(appointment.AppointmentDate) }}</div>
@@ -115,7 +115,7 @@
                                     <div class="mb-3">
                                         <label for="patient-select" class="form-label">Patient</label>
                                         <select class="form-select border" id="patient-select" v-model="selectedPatient">
-                                            <option selected disabled value="1">{{ appointment.PatientFullName}}</option>
+                                            <option disabled :value="appointment.PatientFullName">{{ appointment.PatientFullName}}</option>
                                         </select>
                                     </div>
                                     <div class="mb-3">
@@ -195,6 +195,7 @@
                 showNewAppointmentCard: false,
                 patients: [],
                 selectedPatient: null,
+                selectedStatus: null,
                 appointmentDate: null,
                 appointmentName: '',
                 appointmentDescription: '',
@@ -226,6 +227,7 @@
         },
         created() {
             this.fetchStaffPatients();
+            this.selectedStatus = this.appointment.Status;
         },
         methods: {
             // Format appointment date
