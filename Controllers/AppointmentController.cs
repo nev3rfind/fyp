@@ -156,7 +156,7 @@ namespace NhsImsApp.Controllers
         /// Add new appointment record
         /// </summary>
         /// <param name="inputModel"></param>
-        /// <returns></returns>
+        /// <returns>Status</returns>
         [HttpPost]
         public ActionResult AddAppointmentRecord(AppointmentInputModel inputModel)
         {
@@ -176,6 +176,35 @@ namespace NhsImsApp.Controllers
             // Add new record to the database
             _Context.Appointments.Add(newAppointment);
 
+            _Context.SaveChanges();
+
+            return Json(new { success = true });
+        }
+
+        /// <summary>
+        /// Updates appointment details
+        /// </summary>
+        /// <param name="inputModel"></param>
+        /// <returns>Status</returns>
+        [HttpPut]
+        public ActionResult UpdateAppointment(AppointmentUpdateInputModel inputModel)
+        {
+            // Find the appointment to update in the database
+            var appointmentToUpdate = _Context.Appointments.FirstOrDefault(a => a.AppointmentId == inputModel.AppointmentId);
+
+            // Check if the appointment exists
+            if (appointmentToUpdate == null)
+            {
+                return Json(new { success = false, message = "Appointment not found" });
+            }
+
+            // Update the appointment details
+            appointmentToUpdate.AppointmentDate = inputModel.AppointmentDate;
+            appointmentToUpdate.AppointmentName = inputModel.AppointmentName;
+            appointmentToUpdate.Description = inputModel.Description;
+            appointmentToUpdate.Status = inputModel.Status;
+
+            // Save the changes to the database
             _Context.SaveChanges();
 
             return Json(new { success = true });

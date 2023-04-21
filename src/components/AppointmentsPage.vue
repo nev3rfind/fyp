@@ -109,8 +109,9 @@
                     <div v-else class="col-xl-6 col-sm-12 col-md-12 col-12 mt-0">
                         <!-- Modify appointment card -->
                         <div class="card mb-2 appointment-card">
+                            <div class="appointment-update-message text-center">Appointment details updated successfully <i class='bx bxs-check-circle'></i></div>
                             <div class="card-content">
-                                <div class="card-body">
+                                <div class="card-body" v-if="!appointmentUpdated">
                                     <h5 class="mb-3">Modifying appointment #{{ appointment.AppointmentId }}</h5>
                                     <div class="mb-3">
                                         <label for="patient-select" class="form-label">Patient</label>
@@ -130,22 +131,22 @@
                                     <div class="mb-3">
                                         <label for="appointment-date" class="form-label">Appointment Date</label>
                                         <input type="date" :class="{ 'is-invalid': dateError }" class="form-control border" id="appointment-date" v-model="appointmentDate">
-                                        <div v-if="dateError" class="invalid-feedback">{{ dateError }}</div>
                                     </div>
                                     <div class="mb-3">
                                         <label for="appointment-name" class="form-label">Appointment Name</label>
                                         <input type="text" :class="{ 'is-invalid': nameError }" class="form-control border" id="appointment-name" v-model="appointmentName">
-                                        <div v-if="nameError" class="invalid-feedback">{{ nameError }}</div>
                                     </div>
                                     <div class="mb-3">
                                         <label for="appointment-description" class="form-label">Appointment Description</label>
                                         <textarea :class="{ 'is-invalid': descriptionError }" class="form-control border" id="appointment-description" v-model="appointmentDescription"></textarea>
-                                        <div v-if="descriptionError" class="invalid-feedback">{{ descriptionError }}</div>
                                     </div>
                                     <div class="d-flex justify-content-between buttons-row">
                                         <button class="btn btn-light btn-sm border confirm-btn" @click="cancelModifyAppointment(appointment.AppointmentId)">Cancel</button>
                                         <button class="btn btn-success btn-sm" @click="updateAppointment(appointment.AppointmentId)">Update</button>
                                     </div>
+                                </div>
+                                <div class="card-body d-flex justify-content-center align-items-center" v-else>
+                                    <h5 class="text-center text-success">Appointment updated <i class='bx bxs-check-circle'></i></h5>
                                 </div>
                             </div>
                         </div>
@@ -204,6 +205,7 @@
                 nameError: null,
                 descriptionError: null,
                 appointmentAdded: false,
+                appointmentUpdated: false,
                 modifyingAppointment: {},
                 selectedAppointmentId: null,
                 appointments: [],
@@ -302,6 +304,16 @@
             },
             startModifyingAppointment(appointmentId) {
                 this.modifyingAppointment[appointmentId] = true;
+
+                // Find the appointment object
+                const appointment = this.appointments.find(a => a.AppointmentId === appointmentId);
+
+                // Set the variables with the appointment details
+                this.selectedPatient = appointment.PatientFullName;
+                this.selectedStatus = appointment.Status;
+                this.appointmentDate = moment(appointment.AppointmentDate).format('YYYY-MM-DD');
+                this.appointmentName = appointment.AppointmentName;
+                this.appointmentDescription = appointment.Description;
                 
             },
             cancelModifyAppointment(appointmentId) {
@@ -344,7 +356,36 @@
                 } catch (error) {
                     console.error('Error fetching patients:', error);
                 }
-            }
+            },
+            // Update appointment details
+            async updateAppointment(appointmentId) {
+                try {
+                    const response = await axios.put('/api/appointment/UpdateAppointment', {
+                        appointmentId: appointmentId,
+                        appointmentDate: this.appointmentDate,
+                        appointmentName: this.appointmentName,
+                        description: this.appointmentDescription,
+                        status: this.selectedStatus
+                    });
+
+                    if (response.data.success) {
+                        const index = this.appointments.findIndex(a => a.AppointmentId === appointmentId);
+                        this.appointments[index] = response.data.appointment;
+                        this.modifyingAppointment[appointmentId] = false;
+
+                        this.appointmentUpdated = true;
+                        setTimeout(() => {
+                            this.appointmentUpdated = false;
+                            this.showNewAppointmentCard = false;
+                            this.resetForm();
+                        }, 2000);
+                    } else {
+                        console.log('Error updating appointment');
+                    }
+                } catch (error) {
+                    console.error(error);
+                }
+            }, 
         },
     };
 </script>
@@ -543,6 +584,21 @@
         border: none;
         background: transparent;
         color: black!important;
+    }
+
+    .appointment-update-message {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background-color: rgba(255, 255, 255, 0.8);
+        padding: 20px;
+        border-radius: 5px;
+        display: none;
+    }
+
+    .appointment-update-message.show {
+        display: block;
     }
 
 </style>
