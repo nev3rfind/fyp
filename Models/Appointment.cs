@@ -16,8 +16,16 @@ namespace NhsImsApp.Models
         public string Description { get; set; }
         public string Status { get; set; }
         public bool AttendanceConfirmed { get; set; }
-
         public virtual Patient Patient { get; set; }
         public virtual Staff Staff { get; set; }
+    }
+
+    public class AppointmentInputModel
+    {
+        public int PatientId { get; set; }
+        public int StaffId { get; set; }
+        public DateTime AppointmentDate { get; set; }
+        public string AppointmentName { get; set; }
+        public string Description { get; set; }
     }
 }

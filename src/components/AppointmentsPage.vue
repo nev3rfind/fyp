@@ -227,7 +227,6 @@
         },
         created() {
             this.fetchStaffPatients();
-            this.selectedStatus = this.appointment.Status;
         },
         methods: {
             // Format appointment date
@@ -249,7 +248,7 @@
                 this.nameError = null;
                 this.descriptionError = null;
 
-                if (!this.selectedPatient) {
+                if (this.selectedPatient === 'null') {
                     this.patientError = 'Please select a patient';
                 }
 
@@ -268,13 +267,24 @@
                 if (!this.patientError && !this.dateError && !this.nameError && !this.descriptionError) {
                     // Submit the form, save the data, etc.
                     try {
-                        // Perform API call to add the appointment
-                        this.appointmentAdded = true;
-                        setTimeout(() => {
-                            this.appointmentAdded = false;
-                            this.showNewAppointmentCard = false;
-                            this.resetForm();
-                        }, 2000);
+                        const response = await axios.post('/api/appointment/AddAppointmentRecord', {
+                            staffId: this.staffId,
+                            patientId: this.selectedPatient,
+                            appointmentDate: this.appointmentDate,
+                            appointmentName: this.appointmentName,
+                            description: this.appointmentDescription,
+                        });
+                        if (response.data.success) {
+                            this.fetchAppointments();
+                            this.appointmentAdded = true;
+                            setTimeout(() => {
+                                this.appointmentAdded = false;
+                                this.showNewAppointmentCard = false;
+                                this.resetForm();
+                            }, 2000);
+                        } else {
+                            console.log('Error adding medication record');
+                        }  
                     } catch (error) {
                         console.error(error);
                     }

@@ -99,6 +99,13 @@ namespace NhsImsApp.Controllers
             });
         }
 
+        /// <summary>
+        /// Get appointments by selected date range and by staffId
+        /// </summary>
+        /// <param name="staffId"></param>
+        /// <param name="startDate"></param>
+        /// <param name="endDate"></param>
+        /// <returns>Matching appointments list</returns>
         [HttpPost]
         public ActionResult GetAppointmentsByRange(int staffId, DateTime startDate, DateTime endDate)
         {
@@ -143,6 +150,35 @@ namespace NhsImsApp.Controllers
                 success = true,
                 appointments = 0
             });
+        }
+
+        /// <summary>
+        /// Add new appointment record
+        /// </summary>
+        /// <param name="inputModel"></param>
+        /// <returns></returns>
+        [HttpPost]
+        public ActionResult AddAppointmentRecord(AppointmentInputModel inputModel)
+        {
+            // Create a new Appointment instance
+            var newAppointment = new Appointment
+            {
+                StaffId = inputModel.StaffId,
+                PatientId = inputModel.PatientId,
+                AppointmentDate = inputModel.AppointmentDate,
+                AppointmentName = inputModel.AppointmentName,
+                Description = inputModel.Description,
+                CreatedTime = DateTime.Now,
+                Status = "Scheduled",
+                AttendanceConfirmed = false,
+            };
+
+            // Add new record to the database
+            _Context.Appointments.Add(newAppointment);
+
+            _Context.SaveChanges();
+
+            return Json(new { success = true });
         }
     }
 }
