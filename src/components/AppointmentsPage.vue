@@ -76,7 +76,7 @@
             <div class="row scrollable-container">
                 <!-- Appointment card -->
                 <transition name="flip-right" mode="out-in" v-if="appointments !== 0" v-for="(appointment, index) in appointments" :key="appointment.AppointmentId">
-                    <div v-if="!modifyingAppointment[appointment.AppointmentId]" class="col-xl-6 col-sm-12 col-md-12 col-12 mt-0">
+                    <div v-if="!modifyingAppointment[appointment.AppointmentId]" class="col-sm-12 col-md-12 col-lg-6 col-xl-4 mt-0">
                         <div class="card mb-2 appointment-card">
                             <div class="card-content">
                                 <div class="card-body card-top ps-4">
@@ -99,14 +99,14 @@
                                     </div>
                                     <div class="d-flex buttons-row">
                                         <button class="btn btn-sm btn-success w-50" @click="startModifyingAppointment(appointment.AppointmentId)">Modify</button>
-                                        <button class="btn btn-sm btn-warning w-25 ms-2 me-2 text-dark" @click="openCancelModal(appointment.AppointmentId)">Cancel</button>
-                                        <button class="btn btn-sm btn-danger w-25">Delete</button>
+                                        <button class="btn btn-sm btn-warning w-25 ms-2 me-2 text-dark" :disabled="appointment.Status === 'Cancelled'" @click="openCancelModal(appointment.AppointmentId)">Cancel</button>
+                                        <button class="btn btn-sm btn-danger w-25" @click="openDeleteModal(appointment.AppointmentId)">Delete</button>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <div v-else class="col-xl-6 col-sm-12 col-md-12 col-12 mt-0">
+                    <div v-else class="col-xl-4 col-sm-12 col-md-12 col-4 mt-0">
                         <!-- Modify appointment card -->
                         <div class="card mb-2 appointment-card">
                             <div class="appointment-update-message text-center">Appointment details updated successfully <i class='bx bxs-check-circle'></i></div>
@@ -165,11 +165,32 @@
                 </div>
                 <div class="modal-body text-center">
                     <p>Are you sure you want to cancel this appointment?</p>
+                    <p>Appointment reference number is: <strong>#{{ selectedAppointmentId }}</strong></p>
                     <p class="fw-bold text-danger">Appointment status will reflect immediately.</p>
                 </div>
                 <div class="modal-footer d-flex justify-content-between buttons-row">
-                    <button class="btn btn-light btn-sm border confirm-btn w-25"  data-bs-dismiss="modal">Cancel</button>
-                    <button class="btn btn-success btn-sm w-50" @click="confirmCancelAppointment">Confirm</button>
+                    <button class="btn btn-light btn-sm border confirm-btn w-25" data-bs-dismiss="modal">Cancel</button>
+                    <button class="btn btn-success btn-sm w-50" @click="cancelAppointment(selectedAppointmentId)">Confirm</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Delete appointment modal -->
+    <div class="modal fade" id="deleteAppointmentModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Cancel Appointment</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body text-center">
+                    <p>Are you sure you want to <strong>delete</strong> this appointment?</p>
+                    <p>Appointment reference number is: <strong>#{{ deletingAppointmentId }}</strong></p>
+                    <p class="fw-bold text-danger">Appointment record will be erased.</p>
+                </div>
+                <div class="modal-footer d-flex justify-content-between buttons-row">
+                    <button class="btn btn-light btn-sm border confirm-btn w-25" data-bs-dismiss="modal">Cancel</button>
+                    <button class="btn btn-success btn-sm w-50" @click="deleteAppointment(deletingAppointmentId)">Confirm</button>
                 </div>
             </div>
         </div>
@@ -211,8 +232,11 @@
                 appointmentUpdated: false,
                 modifyingAppointment: {},
                 selectedAppointmentId: null,
+                deletingAppointmentId: null,
                 appointments: [],
                 patients: [],
+                cancelModal: null,
+                deleteModal: null,
             };
         },
         async mounted() {
@@ -324,8 +348,13 @@
             },
             openCancelModal(appointmentId) {
                 this.selectedAppointmentId = appointmentId;
-                const modal = new Modal(document.getElementById('cancelAppointmentModal'));
-                modal.show();
+                this.cancelModal = new Modal(document.getElementById('cancelAppointmentModal'));
+                this.cancelModal.show();
+            },
+            openDeleteModal(appointmentId) {
+                this.deletingAppointmentId = appointmentId;
+                this.deleteModal = new Modal(document.getElementById('deleteAppointmentModal'));
+                this.deleteModal.show();
             },
             // Get appointemnts by given date range
             async fetchAppointments() {
@@ -388,6 +417,40 @@
                     console.error(error);
                 }
             }, 
+            // Change appointment status to cancel
+            async cancelAppointment(appointmentId) {
+                try {
+                    const response = await axios.post('/api/appointment/CancelAppointment', {
+                        appointmentId: appointmentId,
+                    });
+
+                    if (response.data.success) {
+                        this.fetchAppointments();
+                        this.cancelModal.hide();
+                    } else {
+                        console.log('Error cancelling appointment');
+                    }
+                } catch (error) {
+                    console.error(error);
+                }
+            },
+            // Change appointment
+            async deleteAppointment(appointmentId) {
+                try {
+                    const response = await axios.post('/api/appointment/DeleteAppointment', {
+                        appointmentId: appointmentId,
+                    });
+
+                    if (response.data.success) {
+                        this.fetchAppointments();
+                        this.deleteModal.hide();
+                    } else {
+                        console.log('Error cancelling appointment');
+                    }
+                } catch (error) {
+                    console.error(error);
+                }
+            },
         },
     };
 </script>

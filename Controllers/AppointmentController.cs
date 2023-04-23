@@ -209,5 +209,58 @@ namespace NhsImsApp.Controllers
 
             return Json(new { success = true });
         }
+
+        /// <summary>
+        /// Cancel given appointment
+        /// </summary>
+        /// <param name="appointmentId"></param>
+        /// <returns>Status</returns>
+        [HttpPost]
+        public ActionResult CancelAppointment(int appointmentId)
+        {
+            // Find the appointment to update in the database
+            var appointmentToUpdate = _Context.Appointments.FirstOrDefault(a => a.AppointmentId == appointmentId);
+
+            // Check if the appointment exists
+            if (appointmentToUpdate == null)
+            {
+                return Json(new { success = false, message = "Appointment not found" });
+            }
+
+            // Update the appointment details
+            appointmentToUpdate.Status = "Cancelled";
+
+            // Save the changes to the database
+            _Context.SaveChanges();
+
+            return Json(new { success = true });
+        }
+
+        /// <summary>
+        /// Delete given appointment
+        /// </summary>
+        /// <param name="appointmentId"></param>
+        /// <returns>Status</returns>
+        [HttpPost]
+        public ActionResult DeleteAppointment(int appointmentId)
+        {
+            // Find the appointment to update in the database
+            var appointmentToDelete = _Context.Appointments.FirstOrDefault(a => a.AppointmentId == appointmentId);
+
+            // Check if the appointment exists
+            if (appointmentToDelete == null)
+            {
+                return Json(new { success = false, message = "Appointment not found" });
+            }
+
+            // Remove the appointment from the database
+            _Context.Appointments.Remove(appointmentToDelete);
+
+            // Save the changes to the database
+            _Context.SaveChanges();
+
+            return Json(new { success = true });
+        }
+
     }
 }

@@ -241,7 +241,7 @@
                 return moment(date).format("HH:mm:ss DD/MM/YYYY");
             },
             formatAppointmentDate(date) {
-                return moment(date).format("HH:MM DD/MM");
+                return moment(date).format("HH:mm DD/MM");
             },
             isObjectEmpty(obj) {
                 return Object.keys(obj).length === 0;
