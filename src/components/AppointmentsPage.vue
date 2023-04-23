@@ -17,8 +17,8 @@
                                         <input type="date" class="form-control border" id="start-date" v-model="startDate">
                                     </div>
                                     <div class="col-6">
-                                        <label for="start-date" class="form-label">Date range to</label>
-                                        <input type="date" class="form-control border" id="start-date" v-model="startDate">
+                                        <label for="end-date" class="form-label">Date range to</label>
+                                        <input type="date" class="form-control border" id="end-date" v-model="endDate">
                                     </div>
                                 </div>
                             </div>
@@ -38,27 +38,26 @@
                                     <div class="mb-3">
                                         <label for="patient-select" class="form-label">Patient</label>
                                         <select class="form-select border" id="patient-select" v-model="selectedPatient">
-                                            <option selected disabled value="1">Please select a patient</option>
+                                            <option disabled :value="null">Please select a patient</option>
                                             <option v-for="patient in patients" :key="patient.PatientId" :value="patient.PatientId">
-                                                {{ patient.PatientName }}
+                                                {{ patient.fullName }}
                                             </option>
-                                            <option>ds</option>
                                         </select>
                                         <div v-if="patientError" class="invalid-feedback">{{ patientError }}</div>
                                     </div>
                                     <div class="mb-3">
                                         <label for="appointment-date" class="form-label">Appointment Date</label>
-                                        <input type="date" :class="{ 'is-invalid': dateError }" class="form-control border" id="appointment-date" v-model="appointmentDate">
+                                        <input type="datetime-local" :class="{ 'is-invalid': dateError }" class="form-control border" id="appointment-date" v-model="newAppointmentDate">
                                         <div v-if="dateError" class="invalid-feedback">{{ dateError }}</div>
                                     </div>
                                     <div class="mb-3">
                                         <label for="appointment-name" class="form-label">Appointment Name</label>
-                                        <input type="text" :class="{ 'is-invalid': nameError }" class="form-control border" id="appointment-name" v-model="appointmentName">
+                                        <input type="text" :class="{ 'is-invalid': nameError }" class="form-control border" id="appointment-name" v-model="newAppointmentName">
                                         <div v-if="nameError" class="invalid-feedback">{{ nameError }}</div>
                                     </div>
                                     <div class="mb-3">
                                         <label for="appointment-description" class="form-label">Appointment Description</label>
-                                        <textarea :class="{ 'is-invalid': descriptionError }" class="form-control border" id="appointment-description" v-model="appointmentDescription"></textarea>
+                                        <textarea :class="{ 'is-invalid': descriptionError }" class="form-control border" id="appointment-description" v-model="newAppointmentDescription"></textarea>
                                         <div v-if="descriptionError" class="invalid-feedback">{{ descriptionError }}</div>
                                     </div>
                                     <div class="d-flex buttons-row">
@@ -75,142 +74,79 @@
                 </div>
             </transition>
             <div class="row scrollable-container">
-                <transition name="flip-right" mode="out-in">
-                    <div v-if="!modifyingAppointment[1]" class="col-xl-6 col-sm-12 col-md-12 col-12 mt-0">
+                <!-- Appointment card -->
+                <transition name="flip-right" mode="out-in" v-if="appointments !== 0" v-for="(appointment, index) in appointments" :key="appointment.AppointmentId">
+                    <div v-if="!modifyingAppointment[appointment.AppointmentId]" class="col-sm-12 col-md-12 col-lg-6 col-xl-4 mt-0">
                         <div class="card mb-2 appointment-card">
                             <div class="card-content">
                                 <div class="card-body card-top ps-4">
-                                    <div class="top-card-text mb-2"><span class="badge bg-danger badge-app">Not attended</span></div>
-                                    <div class="top-card-text"><i class='bx bxs-time time-icon'></i> 12 January 2020, 8:35AM</div>
+                                    <div class="top-card-text mb-2">
+                                        <span class="badge bg-success badge-app" v-if="appointment.Status === 'Attended'">{{ appointment.Status }}</span>
+                                        <span class="badge bg-warning badge-app" v-else-if="appointment.Status === 'Scheduled'">{{ appointment.Status }}</span>
+                                        <span class="badge bg-danger badge-app" v-else-if="appointment.Status === 'Cancelled'">{{ appointment.Status }}</span>
+                                        <span class="badge bg-danger badge-app" v-else>{{ appointment.Status }}</span>
+                                    </div>
+                                    <div class="top-card-text"><i class='bx bxs-time time-icon'></i>{{ formatDate(appointment.AppointmentDate) }}</div>
                                 </div>
                                 <div class="card-body card-down ps-4">
                                     <div class="avatar-block">
-                                        <div class="avatar-initials">JH</div>
+                                        <div class="avatar-initials">{{ appointment.Initials }}</div>
                                     </div>
                                     <div class="card-down-content d-inline-block ps-3">
-                                        <p class="mb-0">John <strong>Hopkins</strong></p>
-                                        <p class="mb-2">22/12/1999</p>
-                                        <div class="mb-3"><span class="badge border bg-app-name"><i class='bx bxs-info-circle'></i> Award integration executive</span></div>
+                                        <p class="mb-0"><strong>{{ appointment.PatientFullName }}</strong></p>
+                                        <p class="mb-2">{{ formatDob(appointment.PatientDob) }}</p>
+                                        <div class="mb-3"><span class="badge border bg-app-name"><i class='bx bxs-info-circle'></i>{{ appointment.AppointmentName }}</span></div>
                                     </div>
                                     <div class="d-flex buttons-row">
-                                        <button class="btn btn-sm btn-success w-50" @click="startModifyingAppointment(1)">Modify</button>
-                                        <button class="btn btn-sm btn-warning w-25 ms-2 me-2 text-dark" @click="openCancelModal(1)">Cancel</button>
-                                        <button class="btn btn-sm btn-danger w-25">Delete</button>
+                                        <button class="btn btn-sm btn-success w-50" @click="startModifyingAppointment(appointment.AppointmentId)">Modify</button>
+                                        <button class="btn btn-sm btn-warning w-25 ms-2 me-2 text-dark" :disabled="appointment.Status === 'Cancelled'" @click="openCancelModal(appointment.AppointmentId)">Cancel</button>
+                                        <button class="btn btn-sm btn-danger w-25" @click="openDeleteModal(appointment.AppointmentId)">Delete</button>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <div v-else class="col-xl-6 col-sm-12 col-md-12 col-12 mt-0">
+                    <div v-else class="col-xl-4 col-sm-12 col-md-12 col-4 mt-0">
                         <!-- Modify appointment card -->
                         <div class="card mb-2 appointment-card">
+                            <div class="appointment-update-message text-center">Appointment details updated successfully <i class='bx bxs-check-circle'></i></div>
                             <div class="card-content">
-                                <div class="card-body">
-                                    <h5 class="mb-3">Modifying appointment #{{ modifyingAppointment.id }}</h5>
+                                <div class="card-body" v-if="!appointmentUpdated">
+                                    <h5 class="mb-3">Modifying appointment #{{ appointment.AppointmentId }}</h5>
                                     <div class="mb-3">
                                         <label for="patient-select" class="form-label">Patient</label>
                                         <select class="form-select border" id="patient-select" v-model="selectedPatient">
-                                            <option selected disabled value="1">Please select a patient</option>
-                                            <option v-for="patient in patients" :key="patient.PatientId" :value="patient.PatientId">
-                                                {{ patient.PatientName }}
-                                            </option>
-                                            <option>ds</option>
+                                            <option disabled :value="appointment.PatientFullName">{{ appointment.PatientFullName}}</option>
                                         </select>
-                                        <div v-if="patientError" class="invalid-feedback">{{ patientError }}</div>
                                     </div>
                                     <div class="mb-3">
                                         <label for="status-select" class="form-label">Appointment Status</label>
                                         <select class="form-select border" id="status-select" v-model="selectedStatus">
-                                            <option value="1">Attented</option>
+                                            <option value="Scheduled">Scheduled</option>
+                                            <option value="Attended">Attended</option>
+                                            <option value="Not attented">Not attented</option>
+                                            <option value="Cancelled">Cancelled</option>
                                         </select>
-                                        <div v-if="patientError" class="invalid-feedback">{{ patientError }}</div>
                                     </div>
                                     <div class="mb-3">
                                         <label for="appointment-date" class="form-label">Appointment Date</label>
-                                        <input type="date" :class="{ 'is-invalid': dateError }" class="form-control border" id="appointment-date" v-model="appointmentDate">
-                                        <div v-if="dateError" class="invalid-feedback">{{ dateError }}</div>
+                                        <input type="datetime-local" :class="{ 'is-invalid': dateError }" class="form-control border" id="appointment-date" v-model="appointmentDate">
                                     </div>
                                     <div class="mb-3">
                                         <label for="appointment-name" class="form-label">Appointment Name</label>
                                         <input type="text" :class="{ 'is-invalid': nameError }" class="form-control border" id="appointment-name" v-model="appointmentName">
-                                        <div v-if="nameError" class="invalid-feedback">{{ nameError }}</div>
                                     </div>
                                     <div class="mb-3">
                                         <label for="appointment-description" class="form-label">Appointment Description</label>
                                         <textarea :class="{ 'is-invalid': descriptionError }" class="form-control border" id="appointment-description" v-model="appointmentDescription"></textarea>
-                                        <div v-if="descriptionError" class="invalid-feedback">{{ descriptionError }}</div>
                                     </div>
                                     <div class="d-flex justify-content-between buttons-row">
-                                        <button class="btn btn-light btn-sm border confirm-btn" @click="cancelModifyAppointment(1)">Cancel</button>
-                                        <button class="btn btn-success btn-sm" @click="updateAppointment(1)">Update</button>
+                                        <button class="btn btn-light btn-sm border confirm-btn" @click="cancelModifyAppointment(appointment.AppointmentId)">Cancel</button>
+                                        <button class="btn btn-success btn-sm" @click="updateAppointment(appointment.AppointmentId)">Update</button>
                                     </div>
                                 </div>
-                            </div>
-                        </div>
-                    </div>
-                </transition>
-                <transition name="flip-right" mode="out-in">
-                    <div v-if="!modifyingAppointment[2]" class="col-xl-6 col-sm-12 col-md-12 col-12 mt-0">
-                        <div class="card mb-2 appointment-card">
-                            <div class="card-content">
-                                <div class="card-body card-top ps-4">
-                                    <div class="top-card-text mb-2"><span class="badge bg-danger badge-app">Not attended</span></div>
-                                    <div class="top-card-text"><i class='bx bxs-time time-icon'></i> 12 January 2020, 8:35AM</div>
-                                </div>
-                                <div class="card-body card-down ps-4">
-                                    <div class="avatar-block">
-                                        <div class="avatar-initials">JH</div>
-                                    </div>
-                                    <div class="card-down-content d-inline-block ps-3">
-                                        <p class="mb-0">John <strong>Hopkins</strong></p>
-                                        <p class="mb-2">22/12/1999</p>
-                                        <div class="mb-3"><span class="badge border bg-app-name"><i class='bx bxs-info-circle'></i> Award integration executive</span></div>
-                                    </div>
-                                    <div class="d-flex buttons-row">
-                                        <button class="btn btn-sm btn-success w-50" @click="startModifyingAppointment(2)">Modify</button>
-                                        <button class="btn btn-sm btn-warning w-25 ms-2 me-2 text-dark">Cancel</button>
-                                        <button class="btn btn-sm btn-danger w-25">Delete</button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div v-else class="col-xl-6 col-sm-12 col-md-12 col-12 mt-0">
-                        <!-- Modify appointment card -->
-                        <div class="card mb-2 appointment-card">
-                            <div class="card-content">
-                                <div class="card-body">
-                                    <h5 class="mb-3">Modifying appointment #{{ modifyingAppointment.id }}</h5>
-                                    <div class="mb-3">
-                                        <label for="patient-select" class="form-label">Patient</label>
-                                        <select class="form-select border" id="patient-select" v-model="selectedPatient">
-                                            <option selected disabled value="1">Please select a patient</option>
-                                            <option v-for="patient in patients" :key="patient.PatientId" :value="patient.PatientId">
-                                                {{ patient.PatientName }}
-                                            </option>
-                                            <option>ds</option>
-                                        </select>
-                                        <div v-if="patientError" class="invalid-feedback">{{ patientError }}</div>
-                                    </div>
-                                    <div class="mb-3">
-                                        <label for="appointment-date" class="form-label">Appointment Date</label>
-                                        <input type="date" :class="{ 'is-invalid': dateError }" class="form-control border" id="appointment-date" v-model="appointmentDate">
-                                        <div v-if="dateError" class="invalid-feedback">{{ dateError }}</div>
-                                    </div>
-                                    <div class="mb-3">
-                                        <label for="appointment-name" class="form-label">Appointment Name</label>
-                                        <input type="text" :class="{ 'is-invalid': nameError }" class="form-control border" id="appointment-name" v-model="appointmentName">
-                                        <div v-if="nameError" class="invalid-feedback">{{ nameError }}</div>
-                                    </div>
-                                    <div class="mb-3">
-                                        <label for="appointment-description" class="form-label">Appointment Description</label>
-                                        <textarea :class="{ 'is-invalid': descriptionError }" class="form-control border" id="appointment-description" v-model="appointmentDescription"></textarea>
-                                        <div v-if="descriptionError" class="invalid-feedback">{{ descriptionError }}</div>
-                                    </div>
-                                    <div class="d-flex justify-content-between buttons-row">
-                                        <button class="btn btn-light btn-sm border confirm-btn" @click="cancelModifyAppointment(2)">Cancel</button>
-                                        <button class="btn btn-success btn-sm" @click="updateAppointment(2)">Update</button>
-                                    </div>
+                                <div class="card-body d-flex justify-content-center align-items-center" v-else>
+                                    <h5 class="text-center text-success">Appointment updated <i class='bx bxs-check-circle'></i></h5>
                                 </div>
                             </div>
                         </div>
@@ -229,11 +165,32 @@
                 </div>
                 <div class="modal-body text-center">
                     <p>Are you sure you want to cancel this appointment?</p>
+                    <p>Appointment reference number is: <strong>#{{ selectedAppointmentId }}</strong></p>
                     <p class="fw-bold text-danger">Appointment status will reflect immediately.</p>
                 </div>
                 <div class="modal-footer d-flex justify-content-between buttons-row">
-                    <button class="btn btn-light btn-sm border confirm-btn w-25"  data-bs-dismiss="modal">Cancel</button>
-                    <button class="btn btn-success btn-sm w-50" @click="confirmCancelAppointment">Confirm</button>
+                    <button class="btn btn-light btn-sm border confirm-btn w-25" data-bs-dismiss="modal">Cancel</button>
+                    <button class="btn btn-success btn-sm w-50" @click="cancelAppointment(selectedAppointmentId)">Confirm</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Delete appointment modal -->
+    <div class="modal fade" id="deleteAppointmentModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Cancel Appointment</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body text-center">
+                    <p>Are you sure you want to <strong>delete</strong> this appointment?</p>
+                    <p>Appointment reference number is: <strong>#{{ deletingAppointmentId }}</strong></p>
+                    <p class="fw-bold text-danger">Appointment record will be erased.</p>
+                </div>
+                <div class="modal-footer d-flex justify-content-between buttons-row">
+                    <button class="btn btn-light btn-sm border confirm-btn w-25" data-bs-dismiss="modal">Cancel</button>
+                    <button class="btn btn-success btn-sm w-50" @click="deleteAppointment(deletingAppointmentId)">Confirm</button>
                 </div>
             </div>
         </div>
@@ -243,29 +200,71 @@
 <script>
     import axios from 'axios';
     import { Modal } from 'bootstrap';
+    import moment from 'moment';
 
     export default {
         data() {
+            const staffId = this.$store.state.user ? this.$store.state.user.staffId : null;
+            const currentDate = new Date();
+            const oneWeek = 7 * 24 * 60 * 60 * 1000;
+            const startDate = new Date(currentDate.getTime() - oneWeek);
+            const endDate = new Date(currentDate.getTime() + oneWeek);
+
             return {
+                staffId: staffId,
+                startDate: startDate.toISOString().split('T')[0],
+                endDate: endDate.toISOString().split('T')[0],
                 showNewAppointmentCard: false,
                 patients: [],
                 selectedPatient: null,
+                selectedStatus: null,
                 appointmentDate: null,
+                newAppointmentDate: null,
                 appointmentName: '',
+                newAppointmentName: '',
                 appointmentDescription: '',
+                newAppointmentDescription: '',
                 patientError: null,
                 dateError: null,
                 nameError: null,
                 descriptionError: null,
                 appointmentAdded: false,
+                appointmentUpdated: false,
                 modifyingAppointment: {},
                 selectedAppointmentId: null,
+                deletingAppointmentId: null,
+                appointments: [],
+                patients: [],
+                cancelModal: null,
+                deleteModal: null,
             };
         },
         async mounted() {
-            // Load patients data here
+            await this.fetchAppointments();
+        },
+        watch: {
+            startDate: {
+                handler() {
+                    this.fetchAppointments();
+                },
+            },
+            endDate: {
+                handler() {
+                    this.fetchAppointments();
+                },
+            },
+        },
+        created() {
+            this.fetchStaffPatients();
         },
         methods: {
+            // Format appointment date
+            formatDate(date) {
+                return moment(date).format('LLLL');
+            },
+            formatDob(date) {
+                return moment(date).format('DD/MM/YYYY');
+            },
             showAddAppointment() {
                 this.showNewAppointmentCard = true;
             },
@@ -278,32 +277,43 @@
                 this.nameError = null;
                 this.descriptionError = null;
 
-                if (!this.selectedPatient) {
+                if (this.selectedPatient === 'null') {
                     this.patientError = 'Please select a patient';
                 }
 
-                if (!this.appointmentDate) {
+                if (!this.newAppointmentDate) {
                     this.dateError = 'Please select an appointment date';
                 }
 
-                if (!this.appointmentName) {
+                if (!this.newAppointmentName) {
                     this.nameError = 'Please enter an appointment name';
                 }
 
-                if (!this.appointmentDescription) {
+                if (!this.newAppointmentDescription) {
                     this.descriptionError = 'Please enter an appointment description';
                 }
 
                 if (!this.patientError && !this.dateError && !this.nameError && !this.descriptionError) {
                     // Submit the form, save the data, etc.
                     try {
-                        // Perform API call to add the appointment
-                        this.appointmentAdded = true;
-                        setTimeout(() => {
-                            this.appointmentAdded = false;
-                            this.showNewAppointmentCard = false;
-                            this.resetForm();
-                        }, 2000);
+                        const response = await axios.post('/api/appointment/AddAppointmentRecord', {
+                            staffId: this.staffId,
+                            patientId: this.selectedPatient,
+                            appointmentDate: this.newAppointmentDate,
+                            appointmentName: this.newAppointmentName,
+                            description: this.newAppointmentDescription,
+                        });
+                        if (response.data.success) {
+                            this.fetchAppointments();
+                            this.appointmentAdded = true;
+                            setTimeout(() => {
+                                this.appointmentAdded = false;
+                                this.showNewAppointmentCard = false;
+                                this.resetForm();
+                            }, 2000);
+                        } else {
+                            console.log('Error adding medication record');
+                        }  
                     } catch (error) {
                         console.error(error);
                     }
@@ -311,9 +321,9 @@
             },
             resetForm() {
                 this.selectedPatient = null;
-                this.appointmentDate = null;
-                this.appointmentName = '';
-                this.appointmentDescription = '';
+                this.newAppointmentDate = null;
+                this.newAppointmentName = '';
+                this.newAppointmentDescription = '';
             },
             cancelAddAppointment() {
                 this.showNewAppointmentCard = false;
@@ -321,6 +331,16 @@
             },
             startModifyingAppointment(appointmentId) {
                 this.modifyingAppointment[appointmentId] = true;
+
+                // Find the appointment object
+                const appointment = this.appointments.find(a => a.AppointmentId === appointmentId);
+
+                // Set the variables with the appointment details
+                this.selectedPatient = appointment.PatientFullName;
+                this.selectedStatus = appointment.Status;
+                this.appointmentDate = moment(appointment.AppointmentDate).format('YYYY-MM-DDTHH:mm');
+                this.appointmentName = appointment.AppointmentName;
+                this.appointmentDescription = appointment.Description;
                 
             },
             cancelModifyAppointment(appointmentId) {
@@ -328,8 +348,108 @@
             },
             openCancelModal(appointmentId) {
                 this.selectedAppointmentId = appointmentId;
-                const modal = new Modal(document.getElementById('cancelAppointmentModal'));
-                modal.show();
+                this.cancelModal = new Modal(document.getElementById('cancelAppointmentModal'));
+                this.cancelModal.show();
+            },
+            openDeleteModal(appointmentId) {
+                this.deletingAppointmentId = appointmentId;
+                this.deleteModal = new Modal(document.getElementById('deleteAppointmentModal'));
+                this.deleteModal.show();
+            },
+            // Get appointemnts by given date range
+            async fetchAppointments() {
+                try {
+                    const response = await axios.post("/api/appointment/GetAppointmentsByRange", {
+                        staffId: this.staffId,
+                        startDate: this.startDate,
+                        endDate: this.endDate,
+                    });
+                    if (response.data.success) {
+                        console.log(response.data);
+                        this.appointments = response.data.appointments;
+                    } else {
+                        console.log('Failed to get appointments:');
+                    }
+                } catch (error) {
+                    console.error(error);
+                }
+            },
+            // Get patients list for dropdown
+            async fetchStaffPatients() {
+                try {
+                    const response = await axios.post(`/api/patient/GetPatientsByStaffId?StaffId=${this.staffId}`)
+                    if (response.data.success) {
+                        console.log(response.data);
+                        this.patients = response.data.patients;
+
+                    } else {
+                        this.patients = null;
+                    }
+                } catch (error) {
+                    console.error('Error fetching patients:', error);
+                }
+            },
+            // Update appointment details
+            async updateAppointment(appointmentId) {
+                try {
+                    const response = await axios.post('/api/appointment/UpdateAppointment', {
+                        appointmentId: appointmentId,
+                        appointmentDate: this.appointmentDate,
+                        appointmentName: this.appointmentName,
+                        description: this.appointmentDescription,
+                        status: this.selectedStatus
+                    });
+
+                    if (response.data.success) {
+                        this.fetchAppointments();
+                        this.appointmentUpdated = true;
+                        setTimeout(async () => {
+                            this.appointmentUpdated = false;
+                            // Fetch the appointments again and update the local state
+                            await this.fetchAppointments();
+                            // Set modifyingAppointment[appointmentId] to false
+                            this.modifyingAppointment[appointmentId] = false;
+                        }, 2000);
+                    } else {
+                        console.log('Error updating appointment');
+                    }
+                } catch (error) {
+                    console.error(error);
+                }
+            }, 
+            // Change appointment status to cancel
+            async cancelAppointment(appointmentId) {
+                try {
+                    const response = await axios.post('/api/appointment/CancelAppointment', {
+                        appointmentId: appointmentId,
+                    });
+
+                    if (response.data.success) {
+                        this.fetchAppointments();
+                        this.cancelModal.hide();
+                    } else {
+                        console.log('Error cancelling appointment');
+                    }
+                } catch (error) {
+                    console.error(error);
+                }
+            },
+            // Change appointment
+            async deleteAppointment(appointmentId) {
+                try {
+                    const response = await axios.post('/api/appointment/DeleteAppointment', {
+                        appointmentId: appointmentId,
+                    });
+
+                    if (response.data.success) {
+                        this.fetchAppointments();
+                        this.deleteModal.hide();
+                    } else {
+                        console.log('Error cancelling appointment');
+                    }
+                } catch (error) {
+                    console.error(error);
+                }
             },
         },
     };
@@ -529,6 +649,21 @@
         border: none;
         background: transparent;
         color: black!important;
+    }
+
+    .appointment-update-message {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background-color: rgba(255, 255, 255, 0.8);
+        padding: 20px;
+        border-radius: 5px;
+        display: none;
+    }
+
+    .appointment-update-message.show {
+        display: block;
     }
 
 </style>

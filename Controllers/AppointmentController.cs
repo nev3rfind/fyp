@@ -98,5 +98,169 @@ namespace NhsImsApp.Controllers
                 success = false
             });
         }
+
+        /// <summary>
+        /// Get appointments by selected date range and by staffId
+        /// </summary>
+        /// <param name="staffId"></param>
+        /// <param name="startDate"></param>
+        /// <param name="endDate"></param>
+        /// <returns>Matching appointments list</returns>
+        [HttpPost]
+        public ActionResult GetAppointmentsByRange(int staffId, DateTime startDate, DateTime endDate)
+        {
+            var appointmentsData = _Context.Appointments
+                .Where(a => a.StaffId == staffId && a.AppointmentDate >= startDate && a.AppointmentDate <= endDate)
+                .Include(a => a.Patient)
+                .OrderBy(a => a.AppointmentDate)
+                .ToList();
+
+            if (appointmentsData.Any())
+            {
+                var appointments = appointmentsData.Select(a => {
+                // Make initials from first letter of first and last name
+                var names = a.Patient.FullName.Split(' ');
+                var initials = "";
+                if (names.Length >= 2)
+                {
+                    initials = names[0].Substring(0, 1) + names[names.Length - 1].Substring(0, 1);
+                }
+                    return new
+                    {
+                        a.AppointmentId,
+                        a.AppointmentDate,
+                        PatientFullName = a.Patient.FullName,
+                        PatientDob = a.Patient.Dob,
+                        a.AppointmentName,
+                        a.Description,
+                        a.Status,
+                        Initials = initials
+                    };
+                }).ToList();
+
+                return Json(new
+                {
+                    success = true,
+                    appointments = appointments
+                });
+            }
+
+            return Json(new
+            {
+                success = true,
+                appointments = 0
+            });
+        }
+
+        /// <summary>
+        /// Add new appointment record
+        /// </summary>
+        /// <param name="inputModel"></param>
+        /// <returns>Status</returns>
+        [HttpPost]
+        public ActionResult AddAppointmentRecord(AppointmentInputModel inputModel)
+        {
+            // Create a new Appointment instance
+            var newAppointment = new Appointment
+            {
+                StaffId = inputModel.StaffId,
+                PatientId = inputModel.PatientId,
+                AppointmentDate = inputModel.AppointmentDate,
+                AppointmentName = inputModel.AppointmentName,
+                Description = inputModel.Description,
+                CreatedTime = DateTime.Now,
+                Status = "Scheduled",
+                AttendanceConfirmed = false,
+            };
+
+            // Add new record to the database
+            _Context.Appointments.Add(newAppointment);
+
+            _Context.SaveChanges();
+
+            return Json(new { success = true });
+        }
+
+        /// <summary>
+        /// Updates appointment details
+        /// </summary>
+        /// <param name="inputModel"></param>
+        /// <returns>Status</returns>
+        [HttpPost]
+        public ActionResult UpdateAppointment(AppointmentUpdateInputModel inputModel)
+        {
+            // Find the appointment to update in the database
+            var appointmentToUpdate = _Context.Appointments.FirstOrDefault(a => a.AppointmentId == inputModel.AppointmentId);
+
+            // Check if the appointment exists
+            if (appointmentToUpdate == null)
+            {
+                return Json(new { success = false, message = "Appointment not found" });
+            }
+
+            // Update the appointment details
+            appointmentToUpdate.AppointmentDate = inputModel.AppointmentDate;
+            appointmentToUpdate.AppointmentName = inputModel.AppointmentName;
+            appointmentToUpdate.Description = inputModel.Description;
+            appointmentToUpdate.Status = inputModel.Status;
+
+            // Save the changes to the database
+            _Context.SaveChanges();
+
+            return Json(new { success = true });
+        }
+
+        /// <summary>
+        /// Cancel given appointment
+        /// </summary>
+        /// <param name="appointmentId"></param>
+        /// <returns>Status</returns>
+        [HttpPost]
+        public ActionResult CancelAppointment(int appointmentId)
+        {
+            // Find the appointment to update in the database
+            var appointmentToUpdate = _Context.Appointments.FirstOrDefault(a => a.AppointmentId == appointmentId);
+
+            // Check if the appointment exists
+            if (appointmentToUpdate == null)
+            {
+                return Json(new { success = false, message = "Appointment not found" });
+            }
+
+            // Update the appointment details
+            appointmentToUpdate.Status = "Cancelled";
+
+            // Save the changes to the database
+            _Context.SaveChanges();
+
+            return Json(new { success = true });
+        }
+
+        /// <summary>
+        /// Delete given appointment
+        /// </summary>
+        /// <param name="appointmentId"></param>
+        /// <returns>Status</returns>
+        [HttpPost]
+        public ActionResult DeleteAppointment(int appointmentId)
+        {
+            // Find the appointment to update in the database
+            var appointmentToDelete = _Context.Appointments.FirstOrDefault(a => a.AppointmentId == appointmentId);
+
+            // Check if the appointment exists
+            if (appointmentToDelete == null)
+            {
+                return Json(new { success = false, message = "Appointment not found" });
+            }
+
+            // Remove the appointment from the database
+            _Context.Appointments.Remove(appointmentToDelete);
+
+            // Save the changes to the database
+            _Context.SaveChanges();
+
+            return Json(new { success = true });
+        }
+
     }
 }
