@@ -186,7 +186,7 @@ namespace NhsImsApp.Controllers
         /// </summary>
         /// <param name="inputModel"></param>
         /// <returns>Status</returns>
-        [HttpPut]
+        [HttpPost]
         public ActionResult UpdateAppointment(AppointmentUpdateInputModel inputModel)
         {
             // Find the appointment to update in the database

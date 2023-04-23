@@ -47,17 +47,17 @@
                                     </div>
                                     <div class="mb-3">
                                         <label for="appointment-date" class="form-label">Appointment Date</label>
-                                        <input type="date" :class="{ 'is-invalid': dateError }" class="form-control border" id="appointment-date" v-model="appointmentDate">
+                                        <input type="datetime-local" :class="{ 'is-invalid': dateError }" class="form-control border" id="appointment-date" v-model="newAppointmentDate">
                                         <div v-if="dateError" class="invalid-feedback">{{ dateError }}</div>
                                     </div>
                                     <div class="mb-3">
                                         <label for="appointment-name" class="form-label">Appointment Name</label>
-                                        <input type="text" :class="{ 'is-invalid': nameError }" class="form-control border" id="appointment-name" v-model="appointmentName">
+                                        <input type="text" :class="{ 'is-invalid': nameError }" class="form-control border" id="appointment-name" v-model="newAppointmentName">
                                         <div v-if="nameError" class="invalid-feedback">{{ nameError }}</div>
                                     </div>
                                     <div class="mb-3">
                                         <label for="appointment-description" class="form-label">Appointment Description</label>
-                                        <textarea :class="{ 'is-invalid': descriptionError }" class="form-control border" id="appointment-description" v-model="appointmentDescription"></textarea>
+                                        <textarea :class="{ 'is-invalid': descriptionError }" class="form-control border" id="appointment-description" v-model="newAppointmentDescription"></textarea>
                                         <div v-if="descriptionError" class="invalid-feedback">{{ descriptionError }}</div>
                                     </div>
                                     <div class="d-flex buttons-row">
@@ -130,7 +130,7 @@
                                     </div>
                                     <div class="mb-3">
                                         <label for="appointment-date" class="form-label">Appointment Date</label>
-                                        <input type="date" :class="{ 'is-invalid': dateError }" class="form-control border" id="appointment-date" v-model="appointmentDate">
+                                        <input type="datetime-local" :class="{ 'is-invalid': dateError }" class="form-control border" id="appointment-date" v-model="appointmentDate">
                                     </div>
                                     <div class="mb-3">
                                         <label for="appointment-name" class="form-label">Appointment Name</label>
@@ -198,8 +198,11 @@
                 selectedPatient: null,
                 selectedStatus: null,
                 appointmentDate: null,
+                newAppointmentDate: null,
                 appointmentName: '',
+                newAppointmentName: '',
                 appointmentDescription: '',
+                newAppointmentDescription: '',
                 patientError: null,
                 dateError: null,
                 nameError: null,
@@ -254,15 +257,15 @@
                     this.patientError = 'Please select a patient';
                 }
 
-                if (!this.appointmentDate) {
+                if (!this.newAppointmentDate) {
                     this.dateError = 'Please select an appointment date';
                 }
 
-                if (!this.appointmentName) {
+                if (!this.newAppointmentName) {
                     this.nameError = 'Please enter an appointment name';
                 }
 
-                if (!this.appointmentDescription) {
+                if (!this.newAppointmentDescription) {
                     this.descriptionError = 'Please enter an appointment description';
                 }
 
@@ -272,9 +275,9 @@
                         const response = await axios.post('/api/appointment/AddAppointmentRecord', {
                             staffId: this.staffId,
                             patientId: this.selectedPatient,
-                            appointmentDate: this.appointmentDate,
-                            appointmentName: this.appointmentName,
-                            description: this.appointmentDescription,
+                            appointmentDate: this.newAppointmentDate,
+                            appointmentName: this.newAppointmentName,
+                            description: this.newAppointmentDescription,
                         });
                         if (response.data.success) {
                             this.fetchAppointments();
@@ -294,9 +297,9 @@
             },
             resetForm() {
                 this.selectedPatient = null;
-                this.appointmentDate = null;
-                this.appointmentName = '';
-                this.appointmentDescription = '';
+                this.newAppointmentDate = null;
+                this.newAppointmentName = '';
+                this.newAppointmentDescription = '';
             },
             cancelAddAppointment() {
                 this.showNewAppointmentCard = false;
@@ -311,7 +314,7 @@
                 // Set the variables with the appointment details
                 this.selectedPatient = appointment.PatientFullName;
                 this.selectedStatus = appointment.Status;
-                this.appointmentDate = moment(appointment.AppointmentDate).format('YYYY-MM-DD');
+                this.appointmentDate = moment(appointment.AppointmentDate).format('YYYY-MM-DDTHH:mm');
                 this.appointmentName = appointment.AppointmentName;
                 this.appointmentDescription = appointment.Description;
                 
@@ -360,7 +363,7 @@
             // Update appointment details
             async updateAppointment(appointmentId) {
                 try {
-                    const response = await axios.put('/api/appointment/UpdateAppointment', {
+                    const response = await axios.post('/api/appointment/UpdateAppointment', {
                         appointmentId: appointmentId,
                         appointmentDate: this.appointmentDate,
                         appointmentName: this.appointmentName,
@@ -369,15 +372,14 @@
                     });
 
                     if (response.data.success) {
-                        const index = this.appointments.findIndex(a => a.AppointmentId === appointmentId);
-                        this.appointments[index] = response.data.appointment;
-                        this.modifyingAppointment[appointmentId] = false;
-
+                        this.fetchAppointments();
                         this.appointmentUpdated = true;
-                        setTimeout(() => {
+                        setTimeout(async () => {
                             this.appointmentUpdated = false;
-                            this.showNewAppointmentCard = false;
-                            this.resetForm();
+                            // Fetch the appointments again and update the local state
+                            await this.fetchAppointments();
+                            // Set modifyingAppointment[appointmentId] to false
+                            this.modifyingAppointment[appointmentId] = false;
                         }, 2000);
                     } else {
                         console.log('Error updating appointment');
