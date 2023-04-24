@@ -106,7 +106,7 @@
                             </div>
                         </div>
                     </div>
-                    <div v-else class="col-xl-4 col-sm-12 col-md-12 col-4 mt-0">
+                    <div v-else class="col-sm-12 col-md-12 col-lg-6 col-xl-4 mt-0">
                         <!-- Modify appointment card -->
                         <div class="card mb-2 appointment-card">
                             <div class="appointment-update-message text-center">Appointment details updated successfully <i class='bx bxs-check-circle'></i></div>

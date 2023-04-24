@@ -82,7 +82,12 @@ namespace NhsImsApp.Controllers
                 }
             });
         }
-
+        /// <summary>
+        /// Verify hashed password
+        /// </summary>
+        /// <param name="inputPassword"></param>
+        /// <param name="storedHashedPassword"></param>
+        /// <returns></returns>
         private bool VerifyPassword(string inputPassword, string storedHashedPassword)
         {
             using (var sha256 = new SHA256Managed())
@@ -112,6 +117,40 @@ namespace NhsImsApp.Controllers
                 // Compare the input password hash string with the stored hashed password (excluding the salt)
                 return storedHashedPassword.Substring(24).Equals(inputPasswordHashString);
             }
+        }
+
+        [HttpPost]
+        public ActionResult MfaLogin(int staffId)
+        {
+            int otp = new Random().Next(1000, 10000);
+
+            // Save OTP in StaffOtps table
+            var staffOtp = new StaffOtp
+            {
+                StaffId = staffId,
+                Otp = otp,
+                RequestedDate = DateTime.UtcNow,
+                ExpireDate = DateTime.UtcNow.AddMinutes(10)
+            };
+            _Context.StaffOtps.Add(staffOtp);
+            _Context.SaveChanges();
+
+            return Json(new { success = true });
+        }
+
+        [HttpPost]
+        public ActionResult VerifyMfa(int staffId, int otp)
+        {
+            var staffOtp = _Context.StaffOtps
+                .FirstOrDefault(s => s.StaffId == staffId && s.Otp == otp && s.ExpireDate > DateTime.UtcNow);
+
+            if (staffOtp == null)
+            {
+                return Json(new { success = false, error = "Invalid OTP." });
+            }
+
+
+            return Json(new { success = true });
         }
     }
     
