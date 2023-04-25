@@ -6,6 +6,7 @@ import PatientSearch from '../components/PatientSearch';
 import PatientDetails from '../components/PatientDetails';
 import PrescriptionPage from '../components/PrescriptionPage';
 import AppointmentsPage from '../components/AppointmentsPage';
+import MfaPage from '../components/MfaPage';
 import store from "./store";
 
 const routes = [
@@ -49,6 +50,12 @@ const routes = [
         path: '/appointments',
         name: 'Appointments',
         component: AppointmentsPage,
+        meta: { requiresAuth: true },
+    },
+    {
+        path: '/mfa',
+        name: 'Mfa',
+        component: MfaPage,
         meta: { requiresAuth: true },
     },
 ];

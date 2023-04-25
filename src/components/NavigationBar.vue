@@ -91,7 +91,10 @@
                 alert("Open user settings page");
             },
             logOut() {
-                this.$store.commit("setUser", null);
+                this.$store.commit("setUser", {
+                    user: null,
+                    isFullyAuth: false,
+                });
                 this.$router.push({ name: "Login" });
             },
             navigateToRoute(route) {

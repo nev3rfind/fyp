@@ -1,5 +1,5 @@
 ﻿<template>
-        <layout v-if="!isLoginPage && !isNotFoundPage">
+        <layout v-if="!isLoginPage && !isNotFoundPage && !isNotMfa">
             <router-view></router-view>
         </layout>
         <router-view v-else></router-view>
@@ -18,6 +18,9 @@ export default {
       },
       isNotFoundPage() {
           return this.$route.name === "NotFound";
+      },
+      isNotMfa() {
+          return this.$route.name === "Mfa";
       },
   }
 };

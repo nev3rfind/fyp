@@ -221,7 +221,7 @@
             },
             // Format appoinment date
             formatAppDate(date) {
-                return moment(date).format("HH:MM Do MMM YYYY");
+                return moment(date).format("HH:mm Do MMM YYYY");
             },
             // Get patient`s procedures
             async fetchProcedures() {

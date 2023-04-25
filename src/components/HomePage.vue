@@ -8,7 +8,10 @@
                             <div class="card-body">
                                 <div class="d-flex justify-content-between align-items-center">
                                     <h4>Hello, {{ user.fullName}}</h4>
-                                    <h4><span class="badge rounded-pill bg-success">Full access</span></h4>
+                                    <h4>
+                                        <span v-if="user.isFullyAuth" class="badge rounded-pill bg-success">Full access</span>
+                                        <span v-else class="badge rounded-pill bg-danger">Only view</span>
+                                    </h4>
                                 </div>
                                 <span v-if="user.isDoctor">welcome to the <span class="fw-bold text-success">doctor</span> page</span>
                                 <span v-else="user.isNurse">welcome to the <span class="fw-bold text-info">nurse</span> page</span>

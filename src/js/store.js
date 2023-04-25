@@ -5,9 +5,11 @@ const store = createStore({
         user: null,
     },
     mutations: {
-        setUser(state, user) {
+        setUser(state, { user, isFullyAuth }) {
+            if (user) {
+                user.isFullyAuth = isFullyAuth;
+            }
             state.user = user;
-            console.log(user)
         },
     },
     getters: {
