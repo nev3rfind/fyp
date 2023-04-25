@@ -38,7 +38,7 @@
                             <div class="card-body">
                                 <div class="d-flex justify-content-between align-items-center">
                                     <h5 class="me-4">Patients waiting prescription</h5>
-                                    <h5><a href="#">View all</a></h5>
+                                    <h5><a href="#" @click.prevent="viewAllPrescriptions">View all</a></h5>
                                 </div>
                                 <div class="d-flex flex-column mt-3" v-if="prescriptions.success">
                                     <span class="text-muted mb-2">{{ prescriptions.renewedPrescriptions}}/{{prescriptions.totalPrescriptions}} completed</span>
@@ -325,8 +325,10 @@
                 } catch (error) {
                     console.error('Error fetching patients:', error);
                 }
+            },
+            viewAllPrescriptions() {
+                this.$router.push('/prescription');
             }
-
         },
     };
 </script>

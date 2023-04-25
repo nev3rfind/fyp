@@ -89,10 +89,10 @@
                                                                     <td v-if="patient.PrescriptionStatus==='Active'" class="text-center"><span class="badge rounded-pill bg-success">{{ formatPresDate(patient.EndDate) }}</span></td>
                                                                     <td v-else class="text-center"><span class="badge rounded-pill bg-danger">{{ formatPresDate(patient.EndDate) }}</span></td>
                                                                     <td v-if="patient.IsRenewed == true" class="text-center"><span class="badge rounded-pill bg-light fw-bold text-success">Extended</span></td>
-                                                                    <td v-else><button class="btn btn-success btn-sm border text-white">Confirm</button></td>
+                                                                    <td v-else><button class="btn btn-success btn-sm border text-white" @click="openPrescriptionExtendModal(patient)">Confirm</button></td>
                                                                 </tr>
                                                             </tbody>
-                                                         
+
                                                         </table>
                                                     </div>
                                                     <!-- Patients not found -->
@@ -117,12 +117,37 @@
             </div>
         </div>
     </div>
+    <!-- Extend prescription date modal -->
+    <div class="modal fade" id="extendPrescriptionModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Extend prescription</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body text-center">
+                    <p>Please select new prescription End Date</p>
+                    <p>Current prescription ref: <strong>#{{ selectedPrescriptionId }}</strong></p>
+                    <div class="mb-2">
+                        <input type="date" :class="{ 'is-invalid': newPrescriptionDateError }" class="form-control border" id="appointment-date" v-model="newPrescriptionTerm">
+                        <div v-if="newPrescriptionDateError" class="invalid-feedback">Please select end date</div>
+                    </div>
+                    <p class="fw-bold text-danger">Prescription end date will reflect immediately.</p>
+                </div>
+                <div class="modal-footer d-flex justify-content-between buttons-row">
+                    <button class="btn btn-light btn-sm border confirm-btn w-25" data-bs-dismiss="modal">Cancel</button>
+                    <button class="btn btn-success btn-sm w-50" @click="extendPrescription">Confirm</button>
+                </div>
+            </div>
+        </div>
+    </div>
 </template>
 
 <script>
     import Collapse from 'bootstrap/js/src/collapse';
     import axios from "axios";
     import moment from 'moment';
+    import { Modal } from 'bootstrap';
 
     export default {
         data() {
@@ -134,6 +159,12 @@
                 prescriptionSummary: [],
                 groupedPrescriptions: [],
                 patients: [],
+                prescriptionModal: null,
+                newPrescriptionTerm: null,
+                newPrescriptionDateError: false,
+                selectedPrescription: null,
+                selectedPrescriptionId: null,
+                selectedAccordion: null,
             };
         },
         created() {
@@ -147,6 +178,7 @@
                 return moment(date).format("DD MMM YYYY");
             },
             async toggleAccordion(index, medicationId) {
+                this.selectedAccordion = index;
                 const updatedIsAccordionOpen = [...this.isAccordionOpen];
                 updatedIsAccordionOpen[index] = !updatedIsAccordionOpen[index];
                 this.isAccordionOpen = updatedIsAccordionOpen;
@@ -210,6 +242,41 @@
                     }
                 } catch (error) {
                     console.error('Error fetching grouped prescriptions:', error);
+                }
+            },
+            openPrescriptionExtendModal(prescription) {
+                console.log("here: " + prescription.PrescriptionId)
+                this.selectedPrescriptionId = prescription.PrescriptionId;
+                this.selectedPrescription = prescription;
+                this.prescriptionModal = new Modal(document.getElementById('extendPrescriptionModal'));
+                this.prescriptionModal.show();
+            },
+            // Extend prescription
+            async extendPrescription() {
+                this.newPrescriptionDateError = false;
+                // Validate the newPrescriptionTerm
+                if (!this.newPrescriptionTerm) {
+                    this.newPrescriptionDateError = true
+                    return;
+                }
+
+                try {
+                    const response = await axios.post('/api/prescription/ExtendPrescriptionDate', {
+                        prescriptionId: this.selectedPrescriptionId,
+                        prescriptionEndDate: this.newPrescriptionTerm,
+                    });
+
+                    if (response.data.success) {
+                        this.newPrescriptionDateError = false;
+                        this.newPrescriptionTerm = null,
+                        this.fetchPatientsList(this.selectedAccordion, response.data.medicationId)
+                        this.prescriptionModal.hide();
+                    } else {
+                        this.newPrescriptionDateError = true;
+                    }
+                } catch (error) {
+                    this.newPrescriptionDateError = true;
+                    console.error(error);
                 }
             },
         },
@@ -388,6 +455,11 @@
         transition: transform 0.3s ease;
     }
 
+    .btn-close {
+        border: none;
+        background: transparent;
+        color: black !important;
+    }
 
 
 </style>
