@@ -180,5 +180,38 @@ namespace NhsImsApp.Controllers
                 success = true
             });
         }
+
+        /// <summary>
+        /// Extend given prescription
+        /// </summary>
+        /// <param name="prescriptionId"></param>
+        /// <param name="prescriptionEndDate"></param>
+        /// <returns>Status</returns>
+        [HttpPost]
+        public ActionResult ExtendPrescriptionDate(int prescriptionId, DateTime prescriptionEndDate)
+        {
+            var currentPrescription = _Context.PatientMedications.FirstOrDefault(a => a.Id == prescriptionId);
+
+            currentPrescription.IsRenewed = true;
+
+            var extentedPrescription = new PatientMedication
+            {
+                PatientId = currentPrescription.PatientId,
+                MedicationId = currentPrescription.MedicationId,
+                StaffId = currentPrescription.StaffId,
+                StartDate = currentPrescription.StartDate,
+                EndDate = prescriptionEndDate,
+                PrescriptionDate = DateTime.Now,
+                IsRenewed = false,
+            };
+
+            _Context.PatientMedications.Add(extentedPrescription);
+
+            _Context.SaveChanges();
+
+            return Json(new { success = true, medicationId = currentPrescription.MedicationId});
+
+
+        }
     }
 } 
