@@ -23,8 +23,7 @@
                                    @input="moveToNextInput(index)"
                                    @keydown.backspace="otpDigits[index] === '' && moveToPreviousInput(index)" />
                         </div>
-                        <div id="validationServerUsernameFeedback"
-                             class="invalid-feedback"
+                        <div class="invalid-feedback d-block text-center"
                              v-if="otpFailed">
                             Invalid code, double check!
                         </div>
@@ -38,7 +37,7 @@
                     <div class="text-center pt-2">
                         <div>
                             Your code has been sent to email:
-                            <strong>u1953937@unimail.hud.ac.uk</strong>
+                            <strong>Check StaffOtps table</strong>
                         </div>
                     </div>
                     <div class="text-center pt-2">
@@ -103,8 +102,6 @@
                 },
                 async onSubmit() {
                     const otp = this.otpDigits.join("");
-                    alert(otp);
-                    alert(this.staff);
                     try {
                         const response = await axios.post("/api/account/verifymfa", {
                             staffId: this.staff.staffId,
@@ -114,16 +111,16 @@
                         if (response.data.success) {
                             this.otpFailed = false;
                             this.$store.commit("setUser", {
-                                user: this.staff,
+                                user: response.data.user,
                                 isFullyAuth: true,
                             });
                             this.$router.push({ name: "Home" }); // Redirect to Home Page
                         } else {
-                            this.loginFailed = true;
+                            this.otpFailed = true;
                             console.error("OTP verification failed: ", response.data.error);
                         }
                     } catch (error) {
-                        this.loginFailed = true;
+                        this.otpFailed = true;
                         this.error = "Error occurred while verifying OTP.";
                     }
                 }, 

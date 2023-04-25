@@ -95,20 +95,17 @@
 
                     if (response.data.success) {
                         this.mfaLoginFailed = false;
-                        alert(response.data.user.staffId)
                         const otpStatus = await axios.post("/api/account/mfalogin", {
                             staffId: response.data.user.staffId,
                         });
                         if (otpStatus.data.success) {
                             this.$store.commit("setUser", {
-                                user: otpStatus.data.user,
+                                user: response.data.user,
                                 isFullyAuth: false,
                             });
-                            alert(otpStatus.data.success)
                             this.mfaLoginFailed = false;
                             this.$router.push({ name: "Mfa" }); // Redirect to MFA Page
                         } else {
-                            alert("otp status unsuccess")
                             this.mfaLoginFailed = true;
                         }
                     } else {

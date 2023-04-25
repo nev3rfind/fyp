@@ -56,10 +56,11 @@ namespace NhsImsApp.Controllers
                 return Json(new { success = false, error = "Invalid username or password." });
             }
             
-            // Get dateTime of previous login
+            // Get dateTime and type of previous login
             var previousLastLogin = user.LastLogin;
             var previouslyAuthenticated = user.LastAuthenticated;
             user.LastLogin = DateTime.Now;
+            user.LastAuthenticated = "Pass";
             // Save the changes to the database
             _Context.SaveChanges();
 
@@ -149,8 +150,36 @@ namespace NhsImsApp.Controllers
                 return Json(new { success = false, error = "Invalid OTP." });
             }
 
+            var user = _Context.Staffs.FirstOrDefault(a => a.StaffId == staffId);
 
-            return Json(new { success = true });
+           
+
+            // Get dateTime and method of previous login
+            var previousLastLogin = user.LastLogin;
+            var previouslyAuthenticated = user.LastAuthenticated;
+            user.LastLogin = DateTime.Now;
+            user.LastAuthenticated = "MFA";
+            // Save the changes to the database
+            _Context.SaveChanges();
+
+
+            // Login successful
+            return Json(new
+            {
+                success = true,
+                message = "Login successful",
+                user = new
+                {
+                    staffId = user.StaffId,
+                    username = user.Username,
+                    fullName = user.FullName,
+                    isDoctor = user.IsDoctor,
+                    isNurse = user.IsNurse,
+                    isAdmin = user.IsAdmin,
+                    lastLogin = previousLastLogin,
+                    lastAuthenticated = previouslyAuthenticated,
+                }
+            });
         }
     }
     
