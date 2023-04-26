@@ -118,7 +118,7 @@
                             <div class="card-body">
                                 <div class="d-flex justify-content-between align-items-center">
                                     <h5 class="me-4"><i class='bx bx-injection'></i> Procedures: {{ procedureCount }}</h5>
-                                    <button class="btn btn-light btn-sm border confirm-btn me-4" :disabled="belongsToStaff !== 'true'">Add <i class='bx bx-plus add-icon'></i></button>
+                                    <button class="btn btn-light btn-sm border confirm-btn me-4" @click="toggleAddProcedure" :disabled="belongsToStaff !== 'true'">Add <i class='bx bx-plus add-icon'></i></button>
                                 </div>
                                 <div v-if="procedureCount !== 0" v-for="(procedure, index) in patientProcedures" :key="procedure.Id" class="row d-flex align-items-center mt-3">
                                     <div class="col-4"><span>{{ procedure.ProcedureName }}</span></div>
@@ -134,6 +134,45 @@
                         </div>
                     </div>
                 </div>
+                <!-- Add procedure card -->
+                <transition name="fade" mode="out-in">
+                    <div class="col-xl-12 col-sm-12 col-12" v-if="showAddProcedure" key="add-procedure-card">
+                        <div class="card mb-2 add-medication-card">
+                            <div class="card-content">
+                                <div class="card-body" v-if="!procedureAdded">
+                                    <h5 class="mb-3"><i class='bx bx-injection'></i> <i class='bx bx-plus text-success'></i> Add new procedure</h5>
+                                    <div class="mb-3">
+                                        <label for="procedure-select" class="form-label">Procedures</label>
+                                        <select class="form-select border" id="procedure-select" v-model="selectedProcedure" :class="{ 'is-invalid': procedureError }">
+                                            <option disabled selected value="">Please select a procedure</option>
+                                            <option v-for="procedure in procedures" :key="procedure.ProcedureId" :value="procedure.ProcedureId">
+                                                {{ procedure.ProcedureName }}
+                                            </option>
+                                        </select>
+                                        <div v-if="procedureError" class="invalid-feedback">{{ procedureError }}</div>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="procedure-date" class="form-label">Procedure Date</label>
+                                        <input type="date" :class="{ 'is-invalid': procedureDateError }" class="form-control" id="procedure-date" v-model="procedureDate">
+                                        <div v-if="procedureDateError" class="invalid-feedback">{{ procedureDateError }}</div>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="procedure-description" class="form-label">Procedure Description</label>
+                                        <textarea :class="{ 'is-invalid': procedureDescriptionError }" class="form-control border" id="procedure-description" v-model="procedureDescription"></textarea>
+                                        <div v-if="procedureDescriptionError" class="invalid-feedback">{{ procedureDescriptionError }}</div>
+                                    </div>
+                                    <div class="d-flex justify-content-between">
+                                        <button class="btn btn-light btn-sm border confirm-btn" @click="cancelAddProcedure">Cancel</button>
+                                        <button class="btn btn-success btn-sm" @click="submitProcedure">Submit</button>
+                                    </div>
+                                </div>
+                                <div class="card-body d-flex justify-content-center align-items-center" v-else>
+                                    <h5 class="text-center text-success">Procedure added <i class='bx bxs-check-circle'></i></h5>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </transition>
                 <!-- Examination card -->
                 <div class="col-xl-6 col-sm-12 col-md-12 col-12">
                     <div class="card mb-2">
@@ -182,14 +221,21 @@
                 procedures: [],
                 patientDetails: [],
                 showAddMedication: false,
+                showAddProcedure: false,
                 medications: [],
+                procedures: [],
                 selectedMedication: '',
+                selectedProcedure: '',
                 startDate: null,
                 endDate: null,
                 medicationError: null,
                 startDateError: null,
                 endDateError: null,
+                procedureError: null,
+                procedureDateError: null,
+                procedureDescriptionError: null,
                 medicationAdded: false,
+                procedureAdded: false,
                 patientMedications: [],
                 medicationCount: null,
                 patientProcedures: [],
@@ -202,9 +248,11 @@
         },
         created() {
             this.selectedMedication = '';
+            this.selectedProcedure = '';
             this.fetchProcedures();
             this.fetchPatientDetails();
             this.fetchMedications();
+            this.fetchProcedureList();
             this.fetchPatientMedicationList();
             this.fetchPatientProcedureList();
             this.fetchPatientExaminationList();
@@ -259,6 +307,9 @@
             toggleAddMedication() {
                 this.showAddMedication = !this.showAddMedication;
             },
+            toggleAddProcedure() {
+                this.showAddProcedure = !this.showAddProcedure;
+            },
             async fetchMedications() {
                 try {
                     const response = await axios.get("/api/medication/GetAllMedications");
@@ -274,6 +325,9 @@
             },
             cancelAddMedication() {
                 this.showAddMedication = false;
+            },
+            cancelAddProcedure() {
+                this.showAddProcedure = false;
             },
             // Add new medication record
             async submitMedication() {
@@ -324,6 +378,11 @@
                 this.selectedMedication = null;
                 this.startDate = null;
                 this.endDate = null;
+            },
+            resetProcedureForm() {
+                this.selectedProcedure = null;
+                this.procedureDate = null;
+                this.procedureDescription = null;
             },
             // Get medications list
             async fetchPatientMedicationList() {
@@ -384,6 +443,62 @@
                     }
                 } catch (error) {
                     console.error(error);
+                }
+            },
+            // Get procedure list for dropdown
+            async fetchProcedureList() {
+                try {
+                    const response = await axios.get("/api/procedure/GetAllProcedures");
+                    if (response.data.success) {
+                        this.procedures = response.data.procedures;
+                    } else {
+                        console.log('Failed to get procedure list:', response.data.message);
+                    }
+                } catch (error) {
+                    console.error('Error fetching procedures list:', error);
+                }
+            },
+            // Add new procedure record
+            async submitProcedure() {
+                this.procedureError = null;
+                this.procedureDateError = null;
+                this.procedureDescriptionError = null;
+
+                if (!this.selectedProcedure) {
+                    this.procedureError = 'Please select a procedure';
+                }
+
+                if (!this.procedureDate) {
+                    this.procedureDateError = 'Please select a procedure date';
+                }
+
+                if (!this.procedureDescription) {
+                    this.procedureDescriptionError = 'Please write some description';
+                }
+
+                if (!this.procedureError && !this.procedureDateError && !this.procedureDescriptionError) {
+                    try {
+                        const response = await axios.post('/api/patient/AddPatientProcedureRecord', {
+                            patientId: this.patientId,
+                            procedureId: this.selectedProcedure,
+                            procedureDate: this.procedureDate,
+                            procedureDescription: this.procedureDescription,
+                        });
+
+                        if (response.data.success) {
+                            this.fetchPatientProcedureList();
+                            this.procedureAdded = true;
+                            setTimeout(() => {
+                                this.procedureAdded = false;
+                                this.showAddProcedure = false;
+                                this.resetProcedureForm();
+                            }, 2000);
+                        } else {
+                            console.log('Error adding procedure record');
+                        }
+                    } catch (error) {
+                        console.error(error);
+                    }
                 }
             },
         }

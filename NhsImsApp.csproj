@@ -134,6 +134,7 @@
     <Compile Include="Controllers\MedicationController.cs" />
     <Compile Include="Controllers\PatientController.cs" />
     <Compile Include="Controllers\PrescriptionController.cs" />
+    <Compile Include="Controllers\ProcedureController.cs" />
     <Compile Include="Controllers\SpaController.cs" />
     <Compile Include="Data\ApplicationDbContext.cs" />
     <Compile Include="Data\DbInitializer.cs" />
@@ -201,6 +202,7 @@
     <Folder Include="Views\Medication\" />
     <Folder Include="Views\Patients\" />
     <Folder Include="Views\Prescription\" />
+    <Folder Include="Views\Procedure\" />
     <Folder Include="Views\Staff\" />
   </ItemGroup>
   <ItemGroup>

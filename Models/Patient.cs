@@ -28,4 +28,12 @@ namespace NhsImsApp.Models
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }
     }
+
+    public class PatientProcedureInputModel
+    {
+        public int PatientId { get; set; }
+        public int ProcedureId { get; set; }
+        public DateTime ProcedureDate { get; set; }
+        public string ProcedureDescription { get; set; }
+    }
 }
