@@ -120,16 +120,27 @@
                                     <h5 class="me-4"><i class='bx bx-injection'></i> Procedures: {{ procedureCount }}</h5>
                                     <button class="btn btn-light btn-sm border confirm-btn me-4" @click="toggleAddProcedure" :disabled="belongsToStaff !== 'true'">Add <i class='bx bx-plus add-icon'></i></button>
                                 </div>
-                                <div v-if="procedureCount !== 0" v-for="(procedure, index) in patientProcedures" :key="procedure.Id" class="row d-flex align-items-center mt-3">
-                                    <div class="col-4"><span>{{ procedure.ProcedureName }}</span></div>
-                                    <div class="col-5">
-                                        <span v-if="procedure.Status === 'Completed'" class="w-100 badge rounded-pill bg-success procedure-badge border">Completed on {{ formatDate(procedure.ActionDate) }} </span>
-                                        <span v-else-if="procedure.Status === 'Scheduled'" class="w-100 badge rounded-pill bg-warning procedure-badge border">Scheduled on {{ formatDate(procedure.ActionDate) }} </span>
-                                        <span v-else class="w-100 badge rounded-pill bg-danger procedure-badge border">Cancelled on {{ formatDate(procedure.ActionDate) }} </span>
+                                <div v-if="!currentProcedure">
+                                    <div v-if="procedureCount !== 0" v-for="(procedure, index) in patientProcedures" :key="procedure.Id" class="row d-flex align-items-center mt-3">
+                                        <div class="col-4"><span>{{ procedure.ProcedureName }}</span></div>
+                                        <div class="col-5">
+                                            <span v-if="procedure.Status === 'Completed'" class="w-100 badge rounded-pill bg-success procedure-badge border">Completed on {{ formatDate(procedure.ActionDate) }} </span>
+                                            <span v-else-if="procedure.Status === 'Scheduled'" class="w-100 badge rounded-pill bg-warning procedure-badge border">Scheduled on {{ formatDate(procedure.ActionDate) }} </span>
+                                            <span v-else class="w-100 badge rounded-pill bg-danger procedure-badge border">Cancelled on {{ formatDate(procedure.ActionDate) }} </span>
+                                        </div>
+                                        <div class="col-3"><span class="procedure-link" @click="currentProcedure = procedure">View more</span></div>
                                     </div>
-                                    <div class="col-3"><span class="procedure-link">View more</span></div>
+                                    <span v-else class="text-muted">No procedures found for this patient</span>
                                 </div>
-                                <span v-else class="text-muted">No procedures found for this patient</span>
+                                <div v-else>
+                                    <h5 class="mb-3">Procedure Details</h5>
+                                    <p><strong>Procedure Name:</strong> {{ currentProcedure.ProcedureName }}</p>
+                                    <p><strong>Procedure Date:</strong> {{ formatDate(currentProcedure.ActionDate) }}</p>
+                                    <p><strong>Procedure Status:</strong> {{ currentProcedure.Status }}</p>
+                                    <p><strong>Procedure Description:</strong></p>
+                                    <p>{{ currentProcedure.Description }}</p>
+                                    <button class="btn btn-light btn-sm border confirm-btn mt-2" @click="currentProcedure = null">Go back</button>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -181,14 +192,24 @@
                                 <div class="d-flex justify-content-between align-items-center">
                                     <h5 class="me-4"><i class='bx bx-clipboard'></i> Examination records: {{ examinationCount }}</h5>
                                 </div>
-                                <div v-if="examinationCount !== 0" v-for="(examination, index) in patientExaminations" :key="examination.Id" class="row d-flex align-items-center mt-3">
-                                    <div class="col-4"><span>{{ formatExamDate(examination.ExaminationDate) }}</span></div>
-                                    <div class="col-5"> <span class="w-100 badge rounded-pill bg-light examination-badge border">{{ examination.ExaminationType }}</span></div>
-                                    <div class="col-3"><span class="procedure-link">View more</span></div>
+                                <div v-if="!currentExamination">
+                                    <div v-if="examinationCount !== 0" v-for="(examination, index) in patientExaminations" :key="examination.Id" class="row d-flex align-items-center mt-3">
+                                        <div class="col-4"><span>{{ formatExamDate(examination.ExaminationDate) }}</span></div>
+                                        <div class="col-5"> <span class="w-100 badge rounded-pill bg-light examination-badge border">{{ examination.ExaminationType }}</span></div>
+                                        <div class="col-3"><span class="procedure-link" @click="currentExamination = examination">View more</span></div>
+                                    </div>
+                                    <span v-else class="text-muted">No examinations found for this patient</span>
+                                    <div class="text-center mt-3">
+                                        <button class="w-75 btn btn-light btn-sm rounded-pill border confirm-btn" @click="toggleAddExamination" :disabled="belongsToStaff !== 'true'">Add new examination record now <i class='bx bx-plus add-icon'></i></button>
+                                    </div>
                                 </div>
-                                <span v-else class="text-muted">No examinations found for this patient</span>
-                                <div class="text-center mt-3">
-                                    <button class="w-75 btn btn-light btn-sm rounded-pill border confirm-btn" @click="toggleAddExamination" :disabled="belongsToStaff !== 'true'">Add new examination record now <i class='bx bx-plus add-icon'></i></button>
+                                <div v-else>
+                                    <h5 class="mb-3">Examination Details</h5>
+                                    <p><strong>Examination Date:</strong> {{ formatExamDate(currentExamination.ExaminationDate) }}</p>
+                                    <p><strong>Examination Type:</strong> {{ currentExamination.ExaminationType }}</p>
+                                    <p><strong>Examination Analysis:</strong></p>
+                                    <p>{{ currentExamination.Analysis }}</p>
+                                    <button class="btn btn-light btn-sm border confirm-btn mt-2" @click="currentExamination = null">Go back</button>
                                 </div>
                             </div>
                         </div>
@@ -290,6 +311,8 @@
                 examinationCount: null,
                 appointmentData: [],
                 appointmentStatus: null,
+                currentProcedure: null,
+                currentExamination: null,
             };
         },
         created() {
@@ -309,7 +332,7 @@
         methods: {
             // Format date
             formatDate(date) {
-                return moment(date).format("DD/MM/YYYY");
+                return moment(date).format("DD/MM/YY");
             },
             // Format examination date
             formatExamDate(date) {

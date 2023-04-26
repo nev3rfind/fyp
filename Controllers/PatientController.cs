@@ -314,6 +314,7 @@ namespace NhsImsApp.Controllers
                     a.ActionDate,
                     a.Status,
                     ProcedureName = a.Procedure.ProcedureName,
+                    a.Description,
                 }).ToList();
 
                 return Json(new
