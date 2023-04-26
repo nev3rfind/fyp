@@ -36,4 +36,12 @@ namespace NhsImsApp.Models
         public DateTime ProcedureDate { get; set; }
         public string ProcedureDescription { get; set; }
     }
+
+    public class PatientExaminationInputModel
+    {
+        public int PatientId { get; set; }
+        public int ExaminationId { get; set; }
+        public DateTime ExaminationDate { get; set; }
+        public string ExaminationAnalysis { get; set; }
+    }
 }

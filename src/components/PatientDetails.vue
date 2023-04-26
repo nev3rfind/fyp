@@ -188,12 +188,51 @@
                                 </div>
                                 <span v-else class="text-muted">No examinations found for this patient</span>
                                 <div class="text-center mt-3">
-                                    <button class="w-75 btn btn-light btn-sm rounded-pill border confirm-btn" :disabled="belongsToStaff !== 'true'">Add new examination record now <i class='bx bx-plus add-icon'></i></button>
+                                    <button class="w-75 btn btn-light btn-sm rounded-pill border confirm-btn" @click="toggleAddExamination" :disabled="belongsToStaff !== 'true'">Add new examination record now <i class='bx bx-plus add-icon'></i></button>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
+                <!-- Add examination card -->
+                <transition name="fade" mode="out-in">
+                    <div class="col-xl-12 col-sm-12 col-12" v-if="showAddExamination" key="add-examination-card">
+                        <div class="card mb-2 add-examination-card">
+                            <div class="card-content">
+                                <div class="card-body" v-if="!examinationAdded">
+                                    <h5 class="mb-3"><i class='bx bx-clipboard'></i> <i class='bx bx-plus text-success'></i> Add new examination</h5>
+                                    <div class="mb-3">
+                                        <label for="examination-select" class="form-label">Examination types</label>
+                                        <select class="form-select border" id="examination-select" v-model="selectedExamination" :class="{ 'is-invalid': examinationError }">
+                                            <option disabled selected value="">Please select an examination</option>
+                                            <option v-for="examination in examinations" :key="examination.ExaminationId" :value="examination.ExaminationId">
+                                                {{ examination.ExaminationType }}
+                                            </option>
+                                        </select>
+                                        <div v-if="examinationError" class="invalid-feedback">{{ examinationError }}</div>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="examination-date" class="form-label">Examination Date</label>
+                                        <input type="date" :class="{ 'is-invalid': examinationDateError }" class="form-control" id="examination-date" v-model="examinationDate">
+                                        <div v-if="examinationDateError" class="invalid-feedback">{{ examinationDateError }}</div>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="examination-description" class="form-label">Examination analysis</label>
+                                        <textarea :class="{ 'is-invalid': examinationAnalysisError }" class="form-control border" id="examination-description" v-model="examinationAnalysis"></textarea>
+                                        <div v-if="examinationAnalysisError" class="invalid-feedback">{{ examinationAnalysisError }}</div>
+                                    </div>
+                                    <div class="d-flex justify-content-between">
+                                        <button class="btn btn-light btn-sm border confirm-btn" @click="cancelAddExamination">Cancel</button>
+                                        <button class="btn btn-success btn-sm" @click="submitExamination">Submit</button>
+                                    </div>
+                                </div>
+                                <div class="card-body d-flex justify-content-center align-items-center" v-else>
+                                    <h5 class="text-center text-success">Examination added <i class='bx bxs-check-circle'></i></h5>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </transition>
             </div>
         </div>
     </div>
@@ -222,10 +261,13 @@
                 patientDetails: [],
                 showAddMedication: false,
                 showAddProcedure: false,
+                showAddExamination: false,
                 medications: [],
                 procedures: [],
+                examinations: [],
                 selectedMedication: '',
                 selectedProcedure: '',
+                selectedExamination: '',
                 startDate: null,
                 endDate: null,
                 medicationError: null,
@@ -234,8 +276,12 @@
                 procedureError: null,
                 procedureDateError: null,
                 procedureDescriptionError: null,
+                examinationError: null,
+                examinationDateError: null,
+                examinationAnalysisError: null,
                 medicationAdded: false,
                 procedureAdded: false,
+                examinationAdded: false,
                 patientMedications: [],
                 medicationCount: null,
                 patientProcedures: [],
@@ -249,10 +295,12 @@
         created() {
             this.selectedMedication = '';
             this.selectedProcedure = '';
+            this.selectedExamination = '',
             this.fetchProcedures();
             this.fetchPatientDetails();
             this.fetchMedications();
             this.fetchProcedureList();
+            this.fetchExaminationList();
             this.fetchPatientMedicationList();
             this.fetchPatientProcedureList();
             this.fetchPatientExaminationList();
@@ -310,6 +358,9 @@
             toggleAddProcedure() {
                 this.showAddProcedure = !this.showAddProcedure;
             },
+            toggleAddExamination() {
+                this.showAddExamination = !this.showAddExamination;
+            },
             async fetchMedications() {
                 try {
                     const response = await axios.get("/api/medication/GetAllMedications");
@@ -328,6 +379,9 @@
             },
             cancelAddProcedure() {
                 this.showAddProcedure = false;
+            },
+            cancelAddExamination() {
+                this.showAddExamination = false;
             },
             // Add new medication record
             async submitMedication() {
@@ -383,6 +437,11 @@
                 this.selectedProcedure = null;
                 this.procedureDate = null;
                 this.procedureDescription = null;
+            },
+            resetExaminationForm() {
+                this.selectedExamination = null;
+                this.examinationDate = null;
+                this.examinationAnalysis = null;
             },
             // Get medications list
             async fetchPatientMedicationList() {
@@ -495,6 +554,62 @@
                             }, 2000);
                         } else {
                             console.log('Error adding procedure record');
+                        }
+                    } catch (error) {
+                        console.error(error);
+                    }
+                }
+            },
+            // Get examination list for dropdown
+            async fetchExaminationList() {
+                try {
+                    const response = await axios.get("/api/examination/GetAllExaminations");
+                    if (response.data.success) {
+                        this.examinations = response.data.examinations;
+                    } else {
+                        console.log('Failed to get examinations list:', response.data.message);
+                    }
+                } catch (error) {
+                    console.error('Error fetching examinations list:', error);
+                }
+            },
+            // Add new examination record
+            async submitExamination() {
+                this.examinationError = null;
+                this.examinationDateError = null;
+                this.examinationAnalysisError = null;
+
+                if (!this.selectedExamination) {
+                    this.examinationError = 'Please select an examination type';
+                }
+
+                if (!this.examinationDate) {
+                    this.examinationDateError = 'Please select an examination date';
+                }
+
+                if (!this.examinationAnalysis) {
+                    this.examinationAnalysisError = 'Please write examination analysis';
+                }
+
+                if (!this.examinationError && !this.examinationDateError && !this.examinationAnalysisError) {
+                    try {
+                        const response = await axios.post('/api/patient/AddPatientExaminationRecord', {
+                            patientId: this.patientId,
+                            examinationId: this.selectedExamination,
+                            examinationDate: this.examinationDate,
+                            examinationAnalysis: this.examinationAnalysis,
+                        });
+
+                        if (response.data.success) {
+                            this.fetchPatientExaminationList();
+                            this.examinationAdded = true;
+                            setTimeout(() => {
+                                this.examinationAdded = false;
+                                this.showAddExamination = false;
+                                this.resetExaminationForm();
+                            }, 2000);
+                        } else {
+                            console.log('Error adding examination record');
                         }
                     } catch (error) {
                         console.error(error);

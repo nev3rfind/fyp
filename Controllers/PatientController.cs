@@ -268,6 +268,31 @@ namespace NhsImsApp.Controllers
         }
 
         /// <summary>
+        /// Adds new patient examination records
+        /// </summary>
+        /// <param name="inputModel"></param>
+        /// <returns>True status if it was successfully added</returns>
+        [HttpPost]
+        public ActionResult AddPatientExaminationRecord(PatientExaminationInputModel inputModel)
+        {
+            // Create a new PatientExamination instance
+            var newPatientExamination = new PatientExamination
+            {
+                PatientId = inputModel.PatientId,
+                ExaminationId = inputModel.ExaminationId,
+                ExaminationDate = inputModel.ExaminationDate,
+                Analysis = inputModel.ExaminationAnalysis,
+            };
+
+            // Add new record to the database
+            _Context.PatientExaminations.Add(newPatientExamination);
+
+            _Context.SaveChanges();
+
+            return Json(new { success = true });
+        }
+
+        /// <summary>
         /// Get patient procedures history
         /// </summary>
         /// <param name="patientId"></param>
