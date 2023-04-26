@@ -15,7 +15,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-xl-6 col-sm-6 col-md-12 col-6">
+                <div class="col-xl-6 col-sm-6 col-md-6 col-6">
                     <div class="card mb-2 head-card">
                         <div class="card-content">
                             <div class="card-body">
@@ -43,7 +43,7 @@
                 </div>
             </div>
             <div class="row">
-                <div v-if="groupedPrescriptions !== 0" v-for="(prescription, index) in groupedPrescriptions" :key="prescription.MedicationId" class="col-xl-6 col-sm-12 col-md-6 col-12">
+                <div v-if="groupedPrescriptions !== 0" v-for="(prescription, index) in groupedPrescriptions" :key="prescription.MedicationId" class="col-xl-6 col-sm-12 col-md-12 col-lg-6 col-12">
                     <div class="accordion mb-3" :id="`accordion-${prescription.MedicationId}`">
                         <div class="accordion-item">
                             <div class="accordion-header d-flex justify-content-between align-items-center" :class="{ 'accordion-border-blue': isAccordionOpen[index] }" @click="toggleAccordion(index, prescription.MedicationId)">
