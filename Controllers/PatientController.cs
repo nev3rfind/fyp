@@ -241,6 +241,33 @@ namespace NhsImsApp.Controllers
         }
 
         /// <summary>
+        /// Adds new patient procedure records
+        /// </summary>
+        /// <param name="inputModel"></param>
+        /// <returns>True status if it was successfully added</returns>
+        [HttpPost]
+        public ActionResult AddPatientProcedureRecord(PatientProcedureInputModel inputModel)
+        {
+            // Create a new PatientProcedure instance
+            var newPatientProcedure = new PatientProcedure
+            {
+                PatientId = inputModel.PatientId,
+                ProcedureId = inputModel.ProcedureId,
+                CreatedDate = DateTime.Now,
+                ActionDate = inputModel.ProcedureDate,
+                Description = inputModel.ProcedureDescription,
+                Status = "Completed",
+            };
+
+            // Add new record to the database
+            _Context.PatientProcedures.Add(newPatientProcedure);
+
+            _Context.SaveChanges();
+
+            return Json(new { success = true });
+        }
+
+        /// <summary>
         /// Get patient procedures history
         /// </summary>
         /// <param name="patientId"></param>
