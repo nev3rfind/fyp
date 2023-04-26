@@ -91,13 +91,13 @@
                                 <h5 class="me-4">Upcoming appointments</h5>
                                 <h6 v-if="isObjectEmpty(upcomingAppointments)">No upcoming appointments found</h6>
                                 <div v-else class="table-responsive">
-                                    <table class="mt-2 table table-centered table-hover table-borderless">
+                                    <table class="mt-2 table table-centered table-borderless">
                                         <thead>
                                             <tr>
                                                 <th scope="col">#</th>
                                                 <th scope="col">Patient Name</th>
                                                 <th scope="col">Appoint. Time</th>
-                                                <th class="ps-5" scope="col">Status</th>
+                                                <th class="ps-5 text-end" scope="col">Status</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -105,7 +105,7 @@
                                                 <td scope="row">{{ index + 1 }}</td>
                                                 <td>{{ appointment.PatientFullName }}</td>
                                                 <td>{{ formatAppointmentDate(appointment.AppointmentDate) }}</td>
-                                                <td>
+                                                <td class="text-end align-middle">
                                                     <span v-if="appointment.Status === 'Scheduled'" class="badge rounded-pill bg-success table-badge">{{ appointment.Status }}</span>
                                                     <span v-else-if="appointment.Status === 'Cancelled'" class="badge rounded-pill bg-danger table-badge">{{ appointment.Status }}</span>
                                                     <span v-else-if="appointment.Status === 'Attended'" class="badge rounded-pill bg-info table-badge">{{ appointment.Status }}</span>
@@ -132,7 +132,7 @@
                                         <ul class="dropdown-menu scrollable-menu">
                                             <li><a class="dropdown-item" href="#">{{ patientsCount }} total</a></li>
                                             <li><hr class="dropdown-divider"></li>
-                                            <li v-for="(patient, index) in patients" :key="patient.PatientId"><a class="dropdown-item" href="#">{{ patient.fullName }}</a></li>
+                                            <li v-for="(patient, index) in patients" :key="patient.PatientId"><a class="dropdown-item" href="#" @click="goToPatientDetails(patient.PatientId)">{{ patient.fullName }}</a></li>
                                         </ul>
                                     </div>
                                 </div>
@@ -328,7 +328,17 @@
             },
             viewAllPrescriptions() {
                 this.$router.push('/prescription');
-            }
+            },
+            // On patient click - go to patient details
+            goToPatientDetails(patientId) {
+                this.$router.push({
+                    name: "PatientDetails",
+                    params: {
+                        patientId: patientId,
+                        belongsToStaff: true,
+                    },
+                });
+            },
         },
     };
 </script>
@@ -386,6 +396,11 @@
     .table-badge {
         font-size: 14px;
         font-weight: 500;
+        color: $neutral-white;
+    }
+    tr:hover {
         color: $neutral-black;
+        background-color: $neutral-grey-pale;
+        cursor: pointer;
     }
 </style>
