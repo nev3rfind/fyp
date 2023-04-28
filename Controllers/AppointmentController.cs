@@ -22,6 +22,11 @@ namespace NhsImsApp.Controllers
             _Context = new ApplicationDbContext();
         }
 
+        public AppointmentController(ApplicationDbContext context)
+        {
+            _Context = context;
+        }
+
         /// <summary>
         ///  Gets appointments grouped by a mounth and count the total appointments in each month
         /// </summary>

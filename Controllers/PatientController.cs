@@ -177,6 +177,11 @@ namespace NhsImsApp.Controllers
             }
         }
 
+        /// <summary>
+        /// Get patient medication list
+        /// </summary>
+        /// <param name="patientId"></param>
+        /// <returns></returns>
         [HttpPost]
         public ActionResult GetPatientMedicationList(int patientId)
         {
