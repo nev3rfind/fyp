@@ -19,7 +19,12 @@ namespace NhsImsApp.Controllers
         {
             _Context = new ApplicationDbContext();
         }
-        
+
+        public AccountController(ApplicationDbContext context)
+        {
+            _Context = context;
+        }
+
 
         [HttpPost]
         public ActionResult Login(LoginViewModel model)
@@ -29,25 +34,25 @@ namespace NhsImsApp.Controllers
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest, "Invalid request");
             }
 
-            if(model.Username.Contains("a"))
-            {
-                return Json(new
-                {
-                    success = true,
-                    message = "Login successful",
-                    user = new
-                    {
-                        staffId = 216,
-                        username = "d1632130",
-                        fullName = "Doctor Test",
-                        isDoctor = true,
-                        isNurse = false,
-                        isAdmin = false,
-                        lastLogin = DateTime.Now,
-                        lastAuthenticated = "Pass",
-                    }
-                });
-            }
+            //if(model.Username.Contains("a"))
+            //{
+            //    return Json(new
+            //    {
+            //        success = true,
+            //        message = "Login successful",
+            //        user = new
+            //        {
+            //            staffId = 216,
+            //            username = "d1632130",
+            //            fullName = "Doctor Test",
+            //            isDoctor = true,
+            //            isNurse = false,
+            //            isAdmin = false,
+            //            lastLogin = DateTime.Now,
+            //            lastAuthenticated = "Pass",
+            //        }
+            //    });
+            //}
 
             var user = _Context.Staffs.FirstOrDefault(u => u.Username == model.Username);
 
