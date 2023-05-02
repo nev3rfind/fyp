@@ -13,8 +13,8 @@
                                         {{ patientDetails.fullName }}
                                     </h4>
                                     <h4>
-                                        <span v-if="belongsToStaff === 'true'" class="badge rounded-pill bg-success">Assigned</span>
-                                        <span v-else="belongsToStaff" class="badge rounded-pill bg-danger">Only View</span>
+                                        <span v-if="belongsToStaff === 'true' && user.isFullyAuth" class="badge rounded-pill bg-success">Assigned</span>
+                                        <span v-else class="badge rounded-pill bg-danger">Only View</span>
                                     </h4>
                                 </div>
                             </div>
@@ -37,8 +37,8 @@
                                             <h6 class="fw-bold">Confirm?* <i class='app-lock bx bxs-lock-alt text-danger'></i></h6>
                                         </div>
                                         <div class="col d-flex">
-                                            <button class="btn btn-light btn-sm border confirm-btn me-4" :disabled="belongsToStaff !== 'true'"><i class='bx bx-check text-success'></i> Yes</button>
-                                            <button class="btn btn-light btn-sm border confirm-btn" :disabled="belongsToStaff !== 'true'"><i class='bx bx-x text-danger'></i> No</button>
+                                            <button class="btn btn-light btn-sm border confirm-btn me-4" :disabled="belongsToStaff !== 'true' || user.isFullyAuth != true"><i class='bx bx-check text-success'></i> Yes</button>
+                                            <button class="btn btn-light btn-sm border confirm-btn" :disabled="belongsToStaff !== 'true' || user.isFullyAuth != true"><i class='bx bx-x text-danger'></i> No</button>
                                         </div>
                                         <span class="app-note text-muted mt-2">*Available to confirm during/after appointment</span>
                                     </div>
@@ -54,7 +54,7 @@
                             <div class="card-body">
                                 <div class="d-flex justify-content-between align-items-center">
                                     <h5 class="me-4"><i class='bx bxs-capsule'></i> Current medication: {{ medicationCount }}</h5>
-                                    <button class="btn btn-light btn-sm border confirm-btn me-4" @click="toggleAddMedication" :disabled="belongsToStaff !== 'true'">Add <i class='bx bx-plus add-icon'></i></button>
+                                    <button class="btn btn-light btn-sm border confirm-btn me-4" @click="toggleAddMedication" :disabled="belongsToStaff !== 'true' || user.isFullyAuth != true">Add <i class='bx bx-plus add-icon'></i></button>
                                 </div>
                                 <div v-if="medicationCount !== 0" v-for="(medication, index) in patientMedications" :key="medication.Id" class="d-flex align-items-center mt-3">
                                     <span>{{ medication.MedicationName }}</span>
@@ -118,7 +118,7 @@
                             <div class="card-body">
                                 <div class="d-flex justify-content-between align-items-center">
                                     <h5 class="me-4"><i class='bx bx-injection'></i> Procedures: {{ procedureCount }}</h5>
-                                    <button class="btn btn-light btn-sm border confirm-btn me-4" @click="toggleAddProcedure" :disabled="belongsToStaff !== 'true'">Add <i class='bx bx-plus add-icon'></i></button>
+                                    <button class="btn btn-light btn-sm border confirm-btn me-4" @click="toggleAddProcedure" :disabled="belongsToStaff !== 'true' || user.isFullyAuth != true">Add <i class='bx bx-plus add-icon'></i></button>
                                 </div>
                                 <div v-if="!currentProcedure">
                                     <div v-if="procedureCount !== 0" v-for="(procedure, index) in patientProcedures" :key="procedure.Id" class="row d-flex align-items-center mt-3">
@@ -200,7 +200,7 @@
                                     </div>
                                     <span v-else class="text-muted">No examinations found for this patient</span>
                                     <div class="text-center mt-3">
-                                        <button class="w-75 btn btn-light btn-sm rounded-pill border confirm-btn" @click="toggleAddExamination" :disabled="belongsToStaff !== 'true'">Add new examination record now <i class='bx bx-plus add-icon'></i></button>
+                                        <button class="w-75 btn btn-light btn-sm rounded-pill border confirm-btn" @click="toggleAddExamination" :disabled="belongsToStaff !== 'true' || user.isFullyAuth != true">Add new examination record now <i class='bx bx-plus add-icon'></i></button>
                                     </div>
                                 </div>
                                 <div v-else>
@@ -272,6 +272,11 @@
             belongsToStaff: {
                 type: Boolean,
                 required: true,
+            },
+        },
+        computed: {
+            user() {
+                return this.$store.state.user;
             },
         },
         data() {

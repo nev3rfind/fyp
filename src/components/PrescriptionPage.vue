@@ -89,7 +89,7 @@
                                                                     <td v-if="patient.PrescriptionStatus==='Active'" class="text-center"><span class="badge rounded-pill bg-success">{{ formatPresDate(patient.EndDate) }}</span></td>
                                                                     <td v-else class="text-center"><span class="badge rounded-pill bg-danger">{{ formatPresDate(patient.EndDate) }}</span></td>
                                                                     <td v-if="patient.IsRenewed == true" class="text-center"><span class="badge rounded-pill bg-light fw-bold text-success">Extended</span></td>
-                                                                    <td v-else><button class="btn btn-success btn-sm border text-white" @click="openPrescriptionExtendModal(patient)">Confirm</button></td>
+                                                                    <td v-else><button class="btn btn-success btn-sm border text-white" @click="openPrescriptionExtendModal(patient)" :disabled="user.isFullyAuth != true">Confirm</button></td>
                                                                 </tr>
                                                             </tbody>
 
@@ -166,6 +166,11 @@
                 selectedPrescriptionId: null,
                 selectedAccordion: null,
             };
+        },
+        computed: {
+            user() {
+                return this.$store.state.user;
+            },
         },
         created() {
             this.fetchPrescriptionSummary();
