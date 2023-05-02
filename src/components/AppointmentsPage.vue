@@ -23,7 +23,7 @@
                                 </div>
                             </div>
                         </div>
-                        <button class="btn confirm-btn w-100 appointment-btn" @click="showNewAppointmentCard = true"><i class='bx bx-calendar-plus me-2'></i> Schedule new appointment</button>
+                        <button class="btn confirm-btn w-100 appointment-btn" @click="showNewAppointmentCard = true" :disabled="user.isFullyAuth != true"><i class='bx bx-calendar-plus me-2'></i> Schedule new appointment</button>
                     </div>
                 </div>
             </div>
@@ -98,9 +98,9 @@
                                         <div class="mb-3"><span class="badge border bg-app-name"><i class='bx bxs-info-circle'></i>{{ appointment.AppointmentName }}</span></div>
                                     </div>
                                     <div class="d-flex buttons-row">
-                                        <button class="btn btn-sm btn-success w-50" @click="startModifyingAppointment(appointment.AppointmentId)">Modify</button>
-                                        <button class="btn btn-sm btn-warning w-25 ms-2 me-2 text-dark" :disabled="appointment.Status === 'Cancelled'" @click="openCancelModal(appointment.AppointmentId)">Cancel</button>
-                                        <button class="btn btn-sm btn-danger w-25" @click="openDeleteModal(appointment.AppointmentId)">Delete</button>
+                                        <button class="btn btn-sm btn-success w-50" @click="startModifyingAppointment(appointment.AppointmentId)" :disabled="user.isFullyAuth != true">Modify</button>
+                                        <button class="btn btn-sm btn-warning w-25 ms-2 me-2 text-dark" :disabled="appointment.Status === 'Cancelled' || user.isFullyAuth != true" @click="openCancelModal(appointment.AppointmentId)">Cancel</button>
+                                        <button class="btn btn-sm btn-danger w-25" @click="openDeleteModal(appointment.AppointmentId)" :disabled="user.isFullyAuth != true">Delete</button>
                                     </div>
                                 </div>
                             </div>
@@ -238,6 +238,11 @@
                 cancelModal: null,
                 deleteModal: null,
             };
+        },
+        computed: {
+            user() {
+                return this.$store.state.user;
+            },
         },
         async mounted() {
             await this.fetchAppointments();

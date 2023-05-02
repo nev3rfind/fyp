@@ -158,7 +158,6 @@
                 return this.$store.state.user;
             },
         },
-
         data() {
             return {
                 prescriptions: [],
